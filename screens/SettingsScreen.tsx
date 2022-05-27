@@ -1,5 +1,5 @@
 import { TouchableOpacity } from "react-native";
-import { Text, View } from "../components/Themed";
+import { Text, View } from "../components/ThemedDefaultComponents";
 import { Logout } from "../controllers/AccountController";
 import { RootStackScreenProps } from "../types";
 

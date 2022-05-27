@@ -1,5 +1,5 @@
 import InputBox from "../components/InputBox";
-import { Text, View } from "../components/Themed";
+import { Text, View } from "../components/ThemedDefaultComponents";
 import { IsLoggedIn, Login } from "../controllers/AccountController";
 import Button from "../components/Button";
 import { useState } from "react";

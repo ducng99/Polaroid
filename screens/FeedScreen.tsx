@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { View } from '../components/Themed';
+import { View } from '../components/ThemedDefaultComponents';
 import { IsLoggedIn, Logout } from '../controllers/AccountController';
 import { RootTabScreenProps } from '../types';
 

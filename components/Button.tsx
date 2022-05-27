@@ -8,8 +8,8 @@ interface IProps {
 
 export default function Button(props: IProps) {
     return (
-        <TouchableOpacity style={{ ...styles.button, ...(props.disabled ? styles.button_disabled : {}) }} onPress={props.onPress} disabled={props.disabled}>
-            <Text style={{ ...styles.innerText, ...(props.disabled ? styles.innerText_disabled : {}) }}>{props.title}</Text>
+        <TouchableOpacity style={[styles.button, (props.disabled ? styles.button_disabled : {})]} onPress={props.onPress} disabled={props.disabled}>
+            <Text style={[styles.innerText, (props.disabled ? styles.innerText_disabled : {})]}>{props.title}</Text>
         </TouchableOpacity >
     )
 }
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         paddingHorizontal: 20,
         paddingVertical: 16,
-        borderRadius: 0,
+        borderRadius: 5,
         marginVertical: 8,
     },
     button_disabled: {
