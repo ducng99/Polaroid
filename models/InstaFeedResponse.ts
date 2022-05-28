@@ -30,6 +30,7 @@ export interface MediaOrAd {
     code:                                       string;
     client_cache_key:                           string;
     filter_type:                                number;
+    accessibility_caption?:                     string;
     is_unified_video:                           boolean;
     should_request_ads:                         boolean;
     caption_is_edited:                          boolean;
@@ -48,9 +49,9 @@ export interface MediaOrAd {
     comment_count:                              number;
     hide_view_all_comment_entrypoint:           boolean;
     inline_composer_display_condition:          InlineComposerDisplayCondition;
-    carousel_media_count?:                      number;
-    carousel_media?:                            CarouselMedia[];
-    can_see_insights_as_brand:                  boolean;
+    image_versions2?:                           MediaOrAdImageVersions2;
+    original_width?:                            number;
+    original_height?:                           number;
     user:                                       MediaOrAdUser;
     can_viewer_reshare:                         boolean;
     like_count:                                 number;
@@ -59,6 +60,8 @@ export interface MediaOrAd {
     facepile_top_likers:                        UserElement[];
     photo_of_you:                               boolean;
     is_organic_product_tagging_eligible:        boolean;
+    can_see_insights_as_brand:                  boolean;
+    preview?:                                   string;
     caption:                                    Caption;
     comment_inform_treatment:                   CommentInformTreatment;
     sharing_friction_info:                      SharingFrictionInfo;
@@ -67,30 +70,22 @@ export interface MediaOrAd {
     profile_grid_control_enabled:               boolean;
     organic_tracking_token:                     string;
     has_shared_to_fb:                           number;
-    product_type:                               ProductType;
+    product_type:                               string;
     deleted_reason:                             number;
     integrity_review_decision:                  IntegrityReviewDecision;
     music_metadata:                             MusicMetadata | null;
-    main_feed_carousel_starting_media_id?:      string;
-    main_feed_carousel_has_unseen_cover_media?: boolean;
     inventory_source:                           InventorySource;
     is_seen:                                    boolean;
     is_eof:                                     boolean;
     ranking_weight:                             number;
-    usertags?:                                  Usertags;
     title?:                                     string;
     nearly_complete_copyright_match?:           boolean;
     media_cropping_info?:                       MediaCroppingInfo;
     thumbnails?:                                Thumbnails;
     igtv_exists_in_viewer_series?:              boolean;
     is_post_live?:                              boolean;
-    image_versions2?:                           MediaOrAdImageVersions2;
-    original_width?:                            number;
-    original_height?:                           number;
     liker_config?:                              LikerConfig;
     mashup_info?:                               MashupInfo;
-    preview?:                                   string;
-    video_subtitles_confidence?:                number;
     is_dash_eligible?:                          number;
     video_dash_manifest?:                       string;
     video_codec?:                               string;
@@ -99,6 +94,15 @@ export interface MediaOrAd {
     has_audio?:                                 boolean;
     video_duration?:                            number;
     view_count?:                                number;
+    carousel_media_count?:                      number;
+    carousel_media?:                            CarouselMedia[];
+    video_subtitles_confidence?:                number;
+    video_subtitles_uri?:                       string;
+    usertags?:                                  Usertags;
+    play_count?:                                number;
+    clips_metadata?:                            ClipsMetadata;
+    main_feed_carousel_starting_media_id?:      string;
+    main_feed_carousel_has_unseen_cover_media?: boolean;
 }
 
 export interface Caption {
@@ -134,7 +138,7 @@ export interface UserElement {
     full_name:            string;
     is_private:           boolean;
     profile_pic_url:      string;
-    profile_pic_id?:      string;
+    profile_pic_id:       string;
     is_verified:          boolean;
     follow_friction_type: number;
     growth_friction_info: GrowthFrictionInfo;
@@ -143,23 +147,28 @@ export interface UserElement {
 
 export interface GrowthFrictionInfo {
     has_active_interventions: boolean;
-    interventions:            MediaCroppingInfo;
+    interventions:            Interventions;
 }
 
-export interface MediaCroppingInfo {
+export interface Interventions {
 }
 
 export interface CarouselMedia {
-    id:                    string;
-    media_type:            number;
-    image_versions2:       CarouselMediaImageVersions2;
-    original_width:        number;
-    original_height:       number;
-    accessibility_caption: string;
-    pk:                    string;
-    carousel_parent_id:    string;
-    commerciality_status:  CommercialityStatus;
-    usertags?:             Usertags;
+    id:                     string;
+    media_type:             number;
+    image_versions2:        CarouselMediaImageVersions2;
+    original_width:         number;
+    original_height:        number;
+    accessibility_caption?: string;
+    pk:                     string;
+    carousel_parent_id:     string;
+    commerciality_status:   CommercialityStatus;
+    video_versions?:        VideoVersion[];
+    video_duration?:        number;
+    is_dash_eligible?:      number;
+    video_dash_manifest?:   string;
+    video_codec?:           string;
+    number_of_qualities?:   number;
 }
 
 export enum CommercialityStatus {
@@ -176,60 +185,55 @@ export interface FirstFrame {
     url:    string;
 }
 
-export interface Usertags {
-    in: In[];
+export interface VideoVersion {
+    type:   number;
+    width:  number;
+    height: number;
+    url:    string;
+    id:     string;
 }
 
-export interface In {
-    user:                       UserElement;
-    position:                   number[];
-    start_time_in_video_in_sec: null;
-    duration_in_video_in_sec:   null;
+export interface ClipsMetadata {
+    music_info:                        null;
+    original_sound_info:               OriginalSoundInfo;
+    audio_type:                        string;
+    music_canonical_id:                string;
+    featured_label:                    null;
+    mashup_info:                       MashupInfo;
+    nux_info:                          null;
+    viewer_interaction_settings:       null;
+    branded_content_tag_info:          BrandedContentTagInfo;
+    shopping_info:                     null;
+    additional_audio_info:             AdditionalAudioInfo;
+    is_shared_to_fb:                   boolean;
+    breaking_content_info:             null;
+    challenge_info:                    null;
+    reels_on_the_rise_info:            null;
+    breaking_creator_info:             null;
+    asset_recommendation_info:         null;
+    contextual_highlight_info:         null;
+    clips_creation_entry_point:        string;
+    audio_ranking_info:                AudioRankingInfo;
+    template_info:                     null;
+    is_fan_club_promo_video:           null;
+    disable_use_in_clips_client_cache: boolean;
 }
 
-export interface CommentInformTreatment {
-    should_have_inform_treatment: boolean;
-    text:                         string;
-    url:                          null;
-    action_type:                  null;
+export interface AdditionalAudioInfo {
+    additional_audio_username: null;
+    audio_reattribution_info:  AudioReattributionInfo;
 }
 
-export interface MediaOrAdImageVersions2 {
-    candidates:            FirstFrame[];
-    additional_candidates: AdditionalCandidates;
+export interface AudioReattributionInfo {
+    should_allow_restore: boolean;
 }
 
-export interface AdditionalCandidates {
-    igtv_first_frame: FirstFrame;
-    first_frame:      FirstFrame;
+export interface AudioRankingInfo {
+    best_audio_cluster_id: string;
 }
 
-export enum InlineComposerDisplayCondition {
-    ImpressionTrigger = "impression_trigger",
-}
-
-export enum IntegrityReviewDecision {
-    Approved = "approved",
-    Pending = "pending",
-    Rejected = "rejected",
-}
-
-export enum InventorySource {
-    MediaOrAd = "media_or_ad",
-}
-
-export interface LikerConfig {
-    is_daisy:                       boolean;
-    hide_view_count:                boolean;
-    show_count_in_likers_list:      boolean;
-    show_view_count_in_likers_list: boolean;
-    show_daisy_liker_list_header:   boolean;
-    show_learn_more:                boolean;
-    ads_display_mode:               number;
-    display_mode:                   number;
-    disable_liker_list_navigation:  boolean;
-    show_author_view_likes_button:  boolean;
-    is_in_daisy_controls:           boolean;
+export interface BrandedContentTagInfo {
+    can_add_tag: boolean;
 }
 
 export interface MashupInfo {
@@ -241,13 +245,6 @@ export interface MashupInfo {
     non_privacy_filtered_mashups_media_count: null;
     mashup_type:                              null;
     is_creator_requesting_mashup:             boolean;
-}
-
-export interface MusicMetadata {
-    music_canonical_id:  string;
-    audio_type:          string;
-    music_info:          null;
-    original_sound_info: OriginalSoundInfo;
 }
 
 export interface OriginalSoundInfo {
@@ -279,9 +276,66 @@ export interface ConsumptionInfo {
     should_mute_audio_reason_type: null;
 }
 
-export enum ProductType {
-    CarouselContainer = "carousel_container",
-    Igtv = "igtv",
+export interface CommentInformTreatment {
+    should_have_inform_treatment: boolean;
+    text:                         string;
+    url:                          null;
+    action_type:                  null;
+}
+
+export interface MediaOrAdImageVersions2 {
+    candidates:             FirstFrame[];
+    additional_candidates?: AdditionalCandidates;
+}
+
+export interface AdditionalCandidates {
+    igtv_first_frame: FirstFrame;
+    first_frame:      FirstFrame;
+}
+
+export enum InlineComposerDisplayCondition {
+    ImpressionTrigger = "impression_trigger",
+}
+
+export enum IntegrityReviewDecision {
+    Pending = "pending",
+    Rejected = "rejected",
+}
+
+export enum InventorySource {
+    MediaOrAd = "media_or_ad",
+}
+
+export interface LikerConfig {
+    is_daisy:                       boolean;
+    hide_view_count:                boolean;
+    show_count_in_likers_list:      boolean;
+    show_view_count_in_likers_list: boolean;
+    show_daisy_liker_list_header:   boolean;
+    show_learn_more:                boolean;
+    ads_display_mode:               number;
+    display_mode:                   number;
+    disable_liker_list_navigation:  boolean;
+    show_author_view_likes_button:  boolean;
+    is_in_daisy_controls:           boolean;
+}
+
+export interface MediaCroppingInfo {
+    square_crop?: SquareCrop;
+}
+
+export interface SquareCrop {
+    crop_left:   number;
+    crop_right:  number;
+    crop_top:    number;
+    crop_bottom: number;
+}
+
+export interface MusicMetadata {
+    music_canonical_id:  string;
+    audio_type:          null | string;
+    music_info:          null;
+    original_sound_info: OriginalSoundInfo | null;
 }
 
 export interface SharingFrictionInfo {
@@ -342,10 +396,13 @@ export interface FriendshipStatus {
     is_feed_favorite: boolean;
 }
 
-export interface VideoVersion {
-    type:   number;
-    width:  number;
-    height: number;
-    url:    string;
-    id:     string;
+export interface Usertags {
+    in: In[];
+}
+
+export interface In {
+    user:                       UserElement;
+    position:                   number[];
+    start_time_in_video_in_sec: null;
+    duration_in_video_in_sec:   null;
 }

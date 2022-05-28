@@ -49,7 +49,7 @@ export default class Storage {
         }
     }
     
-    static async set(key: string, value: any) {
+    static async set(key: string, value: string) {
         await this.Instance.init();
         
         try {            

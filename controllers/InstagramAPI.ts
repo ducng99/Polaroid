@@ -12,71 +12,75 @@ interface RequestOptions {
 }
 
 export async function SendRequest(path: string, _options?: RequestOptions): Promise<Response> {
-    let options: RequestOptions = {
-        host: "https://www.instagram.com",
-        contentType: "form",
-        method: "GET"
-    };
+    try {
+        let options: RequestOptions = {
+            host: "https://www.instagram.com",
+            contentType: "form",
+            method: "GET"
+        };
 
-    options = Object.assign(options, _options);
+        options = Object.assign(options, _options);
 
-    const storedCookies = await GetCookies();
-    let cookieString = Object.entries(storedCookies).map(([key, value]) => `${key}=${value}`).join("; ");
+        const storedCookies = await GetCookies();
+        let cookieString = Object.entries(storedCookies).map(([key, value]) => `${key}=${value}`).join("; ");
 
-    const url = new URL(path, options.host);
+        const url = new URL(path, options.host);
 
-    let headers: { [key: string]: string } = {
-        'User-Agent': UserAgent,
-        'Cookie': cookieString
-    };
+        let headers: { [key: string]: string } = {
+            'User-Agent': UserAgent,
+            'Cookie': cookieString
+        };
 
-    if (storedCookies.csrftoken) {
-        headers['X-CSRFToken'] = storedCookies.csrftoken;
-    }
-
-    if (options.referer) {
-        headers['Referer'] = options.referer;
-    }
-
-    if (options.method === "POST") {
-        switch (options.contentType) {
-            case "json":
-                headers['Content-Type'] = 'application/json';
-                break;
-            case "form":
-            default:
-                headers['Content-Type'] = 'application/x-www-form-urlencoded';
-                break;
+        if (storedCookies.csrftoken) {
+            headers['X-CSRFToken'] = storedCookies.csrftoken;
         }
 
-        headers['X-Requested-With'] = 'XMLHttpRequest';
-    }
-    
-    if (options.additionalHeaders) {
-        Object.assign(headers, options.additionalHeaders);
-    }
-
-    const request = new Request(url.toString(), {
-        method: options.method,
-        body: options.body,
-        headers,
-        referrer: options.referer,
-        credentials: 'omit',
-        cache: 'no-cache'
-    });
-
-    const result = await fetch(request);
-
-    const cookiesText = result.headers.get('set-cookie');
-
-    if (cookiesText) {
-        for (const cookie of SetCookieParser.parse(SetCookieParser.splitCookiesString(cookiesText)))
-        {
-            await UpdateCookies({ [cookie.name]: cookie.value });
+        if (options.referer) {
+            headers['Referer'] = options.referer;
         }
+
+        if (options.method === "POST") {
+            switch (options.contentType) {
+                case "json":
+                    headers['Content-Type'] = 'application/json';
+                    break;
+                case "form":
+                default:
+                    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    break;
+            }
+
+            headers['X-Requested-With'] = 'XMLHttpRequest';
+        }
+
+        if (options.additionalHeaders) {
+            Object.assign(headers, options.additionalHeaders);
+        }
+
+        const request = new Request(url.toString(), {
+            method: options.method,
+            body: options.body,
+            headers,
+            referrer: options.referer,
+            credentials: 'omit',
+            cache: 'no-cache'
+        });
+
+        const result = await fetch(request);
+
+        const cookiesText = result.headers.get('set-cookie');
+
+        if (cookiesText) {
+            for (const cookie of SetCookieParser.parse(SetCookieParser.splitCookiesString(cookiesText))) {
+                await UpdateCookies({ [cookie.name]: cookie.value });
+            }
+        }
+
+        return result;
     }
-    
-    return result;
+    catch (ex) { console.error(ex) }
+
+    return new Response("Internal request failed", { status: 500 });
 }
 
 export async function SendAPIRequest(path: string, body: string) {

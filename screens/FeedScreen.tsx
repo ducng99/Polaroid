@@ -1,53 +1,72 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, FlatList as DefaultFlatList } from 'react-native';
 
-import { View } from '../components/ThemedDefaultComponents';
+import { FlatList, View } from '../components/ThemedDefaultComponents';
 import { IsLoggedIn, Logout } from '../controllers/AccountController';
 import { RootTabScreenProps } from '../types';
 import * as FeedController from '../controllers/FeedController';
+import ArticleModel from '../models/ArticleModel';
+import Article from '../components/Article';
 
 export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Feed'>) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [loadedArticles, setArticles] = useState<ArticleModel[]>([]);
+    const [new_max_id, setNewMaxId] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         (async () => {
+            setIsLoading(true);
+            const oldArticles = await FeedController.GetOldArticles();
+            setArticles(oldArticles);
+            setIsLoading(false);
+
             const isLoggedIn = await IsLoggedIn();
             console.log("Logged in state: " + isLoggedIn);
             setIsLoggedIn(isLoggedIn);
 
             if (isLoggedIn) {
-                await getArticles();
+                await getNewArticles();
             }
             else {
                 navigation.navigate('Login');
             }
         })();
     }, []);
+
+    const getNewArticles = async () => {
+        setIsLoading(true);
+        const { articles, next_max_id } = await FeedController.GetNewArticles();
+        setNewMaxId(next_max_id);
+        setArticles(articles);
+        setIsLoading(false);
+    }
     
-    const getArticles = async () => {
-        const articles = await FeedController.GetArticles();
+    const getMoreArticles = async () => {
+        setIsLoading(true);
+        const { articles, next_max_id } = await FeedController.GetNewArticles(new_max_id);
+        setNewMaxId(next_max_id);
+        setArticles([...loadedArticles, ...articles]);
+        setIsLoading(false);
     }
 
-    return (
-        <View style={styles.container}>
+    const renderArticle = ({ item }: ListRenderItemInfo<ArticleModel>) => <Article key={item.info!.id} article={item} />
 
-        </View>
+    return (
+        <FlatList
+            style={styles.container}
+            data={loadedArticles}
+            renderItem={renderArticle}
+            refreshing={isLoading}
+            onRefresh={getNewArticles}
+            onEndReached={getMoreArticles}
+        />
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
-    },
+        width: '100%',
+        height: '100%',
+    }
 });

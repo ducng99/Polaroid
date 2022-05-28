@@ -11,6 +11,7 @@ npm-debug.*
 web-build/
 .vscode/
 .expo-shared/
+yarn-error.log
 
 # macOS
 .DS_Store

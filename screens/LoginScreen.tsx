@@ -1,8 +1,8 @@
 import InputBox from "../components/InputBox";
 import { Text, View } from "../components/ThemedDefaultComponents";
-import { IsLoggedIn, Login } from "../controllers/AccountController";
+import { GetLastCreds, IsLoggedIn, Login } from "../controllers/AccountController";
 import Button from "../components/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IsValidCreds } from "../utils";
 import { RootStackScreenProps } from "../types";
 
@@ -10,6 +10,15 @@ export default function LoginScreen({ navigation }: RootStackScreenProps<"Login"
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isValidCreds, setValidCreds] = useState(false);
+    
+    useEffect(() => {
+        (async() => {
+            const { username, password } = await GetLastCreds();
+            
+            setUsername(username ?? "");
+            setPassword(password ?? "");
+        })();
+    }, []);
 
     const onLoginPressed = async () => {
         let result = await Login(username, password);
