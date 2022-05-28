@@ -11,7 +11,7 @@ export default function InputBox(props: IProps) {
     const colorScheme = useColorScheme();
 
     return (
-        <TextInput placeholder={props.placeholder} style={[styles.inputBox, styles.inputBox[colorScheme]]} placeholderTextColor={'#666'} secureTextEntry={props.isPassword} onChangeText={props.onChangeText} />
+        <TextInput placeholder={props.placeholder} style={[styles.inputBox, styles[colorScheme]]} placeholderTextColor={'#666'} secureTextEntry={props.isPassword} onChangeText={props.onChangeText} />
     )
 }
 
@@ -21,15 +21,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderRadius: 5,
-        marginVertical: 8,
-        
-        light: {
-            backgroundColor: '#fafafa',
-            color: '#262626',
-        },
-        dark: {
-            backgroundColor: '#333',
-            color: '#fff',
-        }
+        marginVertical: 8
+    },
+    light: {
+        backgroundColor: '#fafafa',
+        color: '#262626',
+    },
+    dark: {
+        backgroundColor: '#333',
+        color: '#fff',
     }
 });

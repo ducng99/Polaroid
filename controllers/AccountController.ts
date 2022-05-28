@@ -1,19 +1,17 @@
 import { InstaLoginResponse } from "../models/InstaLoginResponse";
 import { ClearFetchCookies, UserAgent } from "../utils";
-import { GetCookies, SetCookies } from "./CookiesController";
+import { ClearCookies, GetCookies, UpdateCookies, VerifyCookies } from "./CookiesController";
+import { SendRequest } from "./InstagramAPI";
 
 export async function IsLoggedIn() {
-    try {
-        const response = await fetch("https://www.instagram.com/accounts/edit/", {
-            headers: {
-                'User-Agent': UserAgent
-            },
-            credentials: 'include'
-        });
+    if (VerifyCookies(await GetCookies())) {
+        try {
+            const response = await SendRequest("/accounts/edit/");
 
-        return !response.url.includes("/accounts/login/");
+            return !response.url.includes("/accounts/login/");
+        }
+        catch (ex) { console.error(ex) }
     }
-    catch (ex) { console.error(ex) }
 
     return false;
 }
@@ -25,15 +23,10 @@ export interface LoginResult {
 
 export async function Login(username: string, password: string): Promise<LoginResult> {
     ClearFetchCookies();
-    
-    try {
-        const initialResult = await fetch("https://www.instagram.com/accounts/login/", {
-            credentials: 'include',
-            cache: 'no-cache'
-        });
+    await ClearCookies();
 
-        const csrftoken = /csrftoken=([a-z0-9]+);/i.exec(initialResult.headers.get('set-cookie')!)![1];
-        console.log("csrftoken: " + csrftoken);
+    try {
+        await SendRequest("/accounts/login/");
 
         const body = new URLSearchParams({
             username: username,
@@ -44,31 +37,26 @@ export async function Login(username: string, password: string): Promise<LoginRe
             trustedDeviceRecords: "{}"
         }).toString();
 
-        const loginResult = await fetch("https://www.instagram.com/accounts/login/ajax/", {
+        const loginResult = await SendRequest("/accounts/login/ajax/", {
             method: "POST",
-            body: body,
-            credentials: 'include',
-            cache: "no-cache",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': csrftoken,
-                "X-Requested-With": "XMLHttpRequest",
-                'User-Agent': UserAgent,
-                'Referer': 'https://www.instagram.com/accounts/login/'
-            },
+            body,
+            contentType: "form",
+            referer: 'https://www.instagram.com/accounts/login/'
         });
 
         console.log(loginResult.status);
+        const loginResponseText = await loginResult.text();
+        console.log(loginResponseText.substring(0, 100));
 
-        const loginResponse = await loginResult.json() as InstaLoginResponse;
-        console.log(loginResponse);
+        if (loginResult.status >= 200 && loginResult.status < 300) {
+            const loginResponse = JSON.parse(loginResponseText) as InstaLoginResponse;
 
-        if (loginResponse.status === "ok" && loginResponse.authenticated) {
-            await SetCookies({ csrftoken, user_id: loginResponse.userId });
-            return { status: "ok" };
-        }
-        else if (loginResponse.status === "fail" && loginResponse.two_factor_required) {
-            return { status: "2fa", two_factor_identifier: loginResponse.two_factor_info?.two_factor_identifier };
+            if (loginResponse.status === "ok" && loginResponse.authenticated) {
+                return { status: "ok" };
+            }
+            else if (loginResponse.status === "fail" && loginResponse.two_factor_required) {
+                return { status: "2fa", two_factor_identifier: loginResponse.two_factor_info?.two_factor_identifier };
+            }
         }
     }
     catch (ex) { console.error(ex); }
@@ -77,22 +65,12 @@ export async function Login(username: string, password: string): Promise<LoginRe
 }
 
 export async function Logout() {
-    try
-    {
-        const csrftoken = (await GetCookies()).csrftoken ?? "";
-        
-        await fetch("https://www.instagram.com/accounts/logout/ajax/", {
-            method: "POST",
-            credentials: 'include',
-            cache: "no-cache",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': csrftoken,
-                'User-Agent': UserAgent,
-            }
-        })
+    try {
+        await SendRequest("/accounts/logout/ajax/", {
+            method: "POST"
+        });
     }
     catch (ex) { console.error(ex) }
-    
+
     ClearFetchCookies();
 }

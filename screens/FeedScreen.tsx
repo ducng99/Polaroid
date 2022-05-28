@@ -4,8 +4,9 @@ import { StyleSheet } from 'react-native';
 import { View } from '../components/ThemedDefaultComponents';
 import { IsLoggedIn, Logout } from '../controllers/AccountController';
 import { RootTabScreenProps } from '../types';
+import * as FeedController from '../controllers/FeedController';
 
-export default function FeedScreen({ navigation }: RootTabScreenProps<'Feed'>) {
+export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Feed'>) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -14,11 +15,18 @@ export default function FeedScreen({ navigation }: RootTabScreenProps<'Feed'>) {
             console.log("Logged in state: " + isLoggedIn);
             setIsLoggedIn(isLoggedIn);
 
-            if (!isLoggedIn) {
+            if (isLoggedIn) {
+                await getArticles();
+            }
+            else {
                 navigation.navigate('Login');
             }
         })();
     }, []);
+    
+    const getArticles = async () => {
+        const articles = await FeedController.GetArticles();
+    }
 
     return (
         <View style={styles.container}>

@@ -63,4 +63,16 @@ export default class Storage {
             throw new Error("Failed to set data for key: " + key);
         }
     }
+    
+    static async remove(key: string) {
+        await this.Instance.init();
+        
+        try {
+            await AsyncStorage.removeItem(key);
+        }
+        catch (ex) {
+            console.error(ex);
+            throw new Error("Failed to remove data for key: " + key);
+        }
+    }
 }
