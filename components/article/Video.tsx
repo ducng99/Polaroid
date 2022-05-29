@@ -15,7 +15,7 @@ export default function Video(props: IProps) {
     const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying: boolean } | null>(null);
     const [isMuted, setMuted] = useState(false);
     const playButtonOpacity = useRef(new Animated.Value(0)).current;
-    
+
     useEffect(() => {
         if (status?.isPlaying) {
             playButtonOpacity.setValue(0);
@@ -29,12 +29,12 @@ export default function Video(props: IProps) {
         const ratio = video.width / video.height;
         let width = windowSize.width;
         let height = windowSize.width / ratio;
-        
+
         if (height > windowSize.height * 0.7) {
             height = windowSize.height * 0.7;
             width = height * ratio;
         }
-        
+
         return { width, height };
     }
 
@@ -79,7 +79,9 @@ export default function Video(props: IProps) {
                 <AnimatedFontAwesome name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedFontAwesome>
             </Pressable>
             <Pressable style={styles.muteButton} onPress={toggleMute}>
-                <FontAwesome name={isMuted ? "volume-off" : "volume-up"} size={16} color='#ffffffaa'></FontAwesome>
+                <View style={styles.muteButtonContainer}>
+                    <FontAwesome name={isMuted ? "volume-mute" : "volume-up"} size={14} color='rgba(255,255,255,0.95)'></FontAwesome>
+                </View>
             </Pressable>
         </View>
     )
@@ -97,18 +99,19 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     muteButton: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
         position: 'absolute',
+        width: 42,
+        height: 42,
         bottom: 0,
         right: 0,
+    },
+    muteButtonContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
         borderRadius: 25,
-        width: 30,
-        height: 30,
-        marginRight: 5,
-        marginBottom: 5,
-        backgroundColor: '#262626',
+        width: 28,
+        height: 28,
+        backgroundColor: 'rgba(38, 38, 38, 0.95)',
     },
     videoPlayer: {
         alignSelf: 'center'
