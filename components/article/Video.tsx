@@ -3,13 +3,11 @@ import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode } from 'expo-av'
 import { Animated, Pressable, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "../ThemedDefaultComponents";
-import { FontAwesome } from "@expo/vector-icons";
+import { AnimatedFontAwesome, FontAwesome } from "../VectorIcons";
 
 interface IProps {
     videos: VideoVersion[]
 }
-
-const AnimatedIcon = Animated.createAnimatedComponent(FontAwesome);
 
 export default function Video(props: IProps) {
     const windowSize = useWindowDimensions();
@@ -78,7 +76,7 @@ export default function Video(props: IProps) {
                 resizeMode={ResizeMode.COVER}
             />
             <Pressable style={styles.overlay} onPress={togglePlay}>
-                <AnimatedIcon name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedIcon>
+                <AnimatedFontAwesome name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedFontAwesome>
             </Pressable>
             <Pressable style={styles.muteButton} onPress={toggleMute}>
                 <FontAwesome name={isMuted ? "volume-off" : "volume-up"} size={16} color='#ffffffaa'></FontAwesome>
@@ -110,7 +108,7 @@ const styles = StyleSheet.create({
         height: 30,
         marginRight: 5,
         marginBottom: 5,
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: '#262626',
     },
     videoPlayer: {
         alignSelf: 'center'

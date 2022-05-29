@@ -26,8 +26,14 @@ export default function Image(props: IProps) {
 
     const getFitImageSize = (image: FirstFrame) => {
         const ratio = image.width / image.height;
-        const width = windowSize.width;
-        const height = windowSize.width / ratio;
+        let width = windowSize.width;
+        let height = windowSize.width / ratio;
+        
+        if (height > windowSize.height * 0.7) {
+            height = windowSize.height * 0.7;
+            width = height * ratio;
+        }
+        
         return { width, height };
     }
 

@@ -3,6 +3,7 @@ import ArticleModel, { MediaType } from "../models/ArticleModel";
 import ArticleHeader from "./article/ArticleHeader";
 import Carousel from "./article/Carousel";
 import Image from "./article/Image";
+import InteractionBar from "./article/InteractionBar";
 import Video from "./article/Video";
 import { View } from "./ThemedDefaultComponents";
 
@@ -30,6 +31,7 @@ export default function Article(props: IProps) {
             {
                 getMediaDisplay()
             }
+            <InteractionBar />
         </View>
     )
 }
