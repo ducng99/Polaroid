@@ -16,6 +16,7 @@ export default function useCachedResources() {
                 await Font.loadAsync({
                     ...AntDesign.font,
                     ...FontAwesome.font,
+                    'cookie-handwriting': require('../assets/fonts/Cookie-Regular.ttf'),
                     'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
                 });
             } catch (e) {

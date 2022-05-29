@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome } from '../components/VectorIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,6 +19,8 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import { View } from '../components/ThemedDefaultComponents';
+import Header from '../components/Header';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
     return (
@@ -63,6 +65,9 @@ function BottomTabNavigator() {
             initialRouteName="Feed"
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme].tint,
+                tabBarActiveBackgroundColor: Colors[colorScheme].background,
+                tabBarInactiveBackgroundColor: Colors[colorScheme].background,
+                header: () => <Header />,
             }}>
             <BottomTab.Screen
                 name="Feed"

@@ -1,5 +1,4 @@
-import { useRef } from "react"
-import { ListRenderItemInfo, StyleSheet, FlatList as DefaultFlatList, NativeSyntheticEvent, NativeScrollEvent, useWindowDimensions } from "react-native"
+import { ListRenderItemInfo, StyleSheet } from "react-native"
 import { MediaType } from "../../models/ArticleModel"
 import { CarouselMedia, MediaOrAd } from "../../models/InstaFeedResponse"
 import { FlatList } from "../ThemedDefaultComponents"
@@ -11,8 +10,6 @@ interface IProps {
 }
 
 export default function Carousel(props: IProps) {
-    const width = useWindowDimensions().width;
-
     const renderMedia = ({ item }: ListRenderItemInfo<CarouselMedia | MediaOrAd>) => {
         switch (item.media_type) {
             case MediaType.Image:
@@ -25,7 +22,8 @@ export default function Carousel(props: IProps) {
     }
 
     return (
-        <FlatList horizontal={true}
+        <FlatList
+            horizontal={true}
             style={styles.container}
             data={props.carousel}
             renderItem={renderMedia}
