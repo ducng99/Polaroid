@@ -24,3 +24,16 @@ export const UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Ge
 export function ClearFetchCookies() {
     RCTNetworking.clearCookies(() => { })
 }
+
+export function UniqueMerge<T>(array1: Array<T>, array2: Array<T>, comparer: (a: T, b: T) => boolean): Array<T> {
+    let result = array1.slice();
+
+    for (let i = 0; i < array2.length; i++) {
+        let item = array2[i];
+
+        if (!result.some(x => comparer(x, item)))
+            result.push(item);
+    }
+
+    return result;
+}

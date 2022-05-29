@@ -47,7 +47,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
         setIsLoading(true);
         const { articles, next_max_id } = await FeedController.GetNewArticles(max_id);
         setNewMaxId(next_max_id);
-        setArticles([...loadedArticles, ...articles]);
+        setArticles(UniqueMerge(loadedArticles, articles, (a, b) => a.info?.id === b.info?.id));
         setIsLoading(false);
     }
 
