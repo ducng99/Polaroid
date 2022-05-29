@@ -1,6 +1,6 @@
 import { VideoVersion } from "../../models/InstaFeedResponse"
 import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode } from 'expo-av'
-import { Animated, Pressable, StyleSheet, useWindowDimensions } from "react-native";
+import { Animated, Pressable, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "../ThemedDefaultComponents";
 import { FontAwesome } from "@expo/vector-icons";
@@ -27,10 +27,16 @@ export default function Video(props: IProps) {
         }
     }, []);
 
-    const getFitVideoSize = (video: VideoVersion) => {
+    const getFitVideoSize = (video: VideoVersion): StyleProp<ViewStyle> => {
         const ratio = video.width / video.height;
-        const width = windowSize.width;
-        const height = windowSize.width / ratio;
+        let width = windowSize.width;
+        let height = windowSize.width / ratio;
+        
+        if (height > windowSize.height * 0.7) {
+            height = windowSize.height * 0.7;
+            width = height * ratio;
+        }
+        
         return { width, height };
     }
 
@@ -65,7 +71,7 @@ export default function Video(props: IProps) {
         <View>
             <DefaultVideo
                 source={{ uri: props.videos[0].url }}
-                style={getFitVideoSize(props.videos[0])}
+                style={[styles.videoPlayer, getFitVideoSize(props.videos[0])]}
                 isLooping
                 onPlaybackStatusUpdate={(status) => setStatus(status)}
                 ref={videoRef}
@@ -105,5 +111,8 @@ const styles = StyleSheet.create({
         marginRight: 5,
         marginBottom: 5,
         backgroundColor: 'rgba(0,0,0,0.8)',
+    },
+    videoPlayer: {
+        alignSelf: 'center'
     }
 })
