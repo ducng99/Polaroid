@@ -11,7 +11,6 @@ interface IProps {
 }
 
 export default function Carousel(props: IProps) {
-    const listRef = useRef<DefaultFlatList>(null);
     const width = useWindowDimensions().width;
 
     const renderMedia = ({ item }: ListRenderItemInfo<CarouselMedia | MediaOrAd>) => {
@@ -33,7 +32,6 @@ export default function Carousel(props: IProps) {
             pagingEnabled
             decelerationRate="fast"
             snapToAlignment="start"
-            _ref={listRef}
         />
     )
 }

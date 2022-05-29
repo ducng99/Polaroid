@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ListRenderItemInfo, StyleSheet, FlatList as DefaultFlatList } from 'react-native';
 
-import { FlatList, View } from '../components/ThemedDefaultComponents';
-import { IsLoggedIn, Logout } from '../controllers/AccountController';
+import { FlatList } from '../components/ThemedDefaultComponents';
+import { IsLoggedIn } from '../controllers/AccountController';
 import { RootTabScreenProps } from '../types';
 import * as FeedController from '../controllers/FeedController';
 import ArticleModel from '../models/ArticleModel';
@@ -11,9 +11,10 @@ import Article from '../components/Article';
 export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Feed'>) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loadedArticles, setArticles] = useState<ArticleModel[]>([]);
-    const [new_max_id, setNewMaxId] = useState<string>("");
+    const [max_id, setNewMaxId] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
 
+    // TODO: On navigate to this screen, run recheck below again
     useEffect(() => {
         (async () => {
             setIsLoading(true);
@@ -44,7 +45,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
     
     const getMoreArticles = async () => {
         setIsLoading(true);
-        const { articles, next_max_id } = await FeedController.GetNewArticles(new_max_id);
+        const { articles, next_max_id } = await FeedController.GetNewArticles(max_id);
         setNewMaxId(next_max_id);
         setArticles([...loadedArticles, ...articles]);
         setIsLoading(false);

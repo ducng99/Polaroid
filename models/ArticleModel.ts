@@ -1,8 +1,9 @@
 import { MediaOrAd } from "./InstaFeedResponse";
 
 export enum MediaType {
-    Image = 1,
-    Video = 2,
+    Invalid,
+    Image,
+    Video,
     Carousel = 8,
 }
 
@@ -14,7 +15,7 @@ export default class ArticleModel {
     }
 
     get MediaType(): MediaType {
-        return this.info?.media_type ?? MediaType.Image;
+        return this.info?.media_type ?? MediaType.Invalid;
     }
 
     constructor(info?: MediaOrAd) {

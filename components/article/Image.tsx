@@ -14,13 +14,13 @@ export default function Image(props: IProps) {
      * Get correct sized image to best fit the screen
      */
     const getImage = () => {
-        let optimalImgs = images.filter((img) => img.width > realWidth).sort((a, b) => a.width - b.width);
-        
+        let optimalImgs = images.filter(img => img.width > realWidth).sort((a, b) => a.width - b.width);
+
         if (optimalImgs.length === 0) {
             optimalImgs = images;
             optimalImgs.sort((a, b) => b.width - a.width);
         }
-        
+
         return optimalImgs[0];
     }
 
@@ -30,10 +30,14 @@ export default function Image(props: IProps) {
         const height = windowSize.width / ratio;
         return { width, height };
     }
-    
+
     const image = getImage();
-    
+
     return (
-        <DefaultImage source={{ uri: image.url }} style={getFitImageSize(image)} />
+        <DefaultImage
+            source={{ uri: image.url }}
+            style={getFitImageSize(image)}
+            resizeMode='cover'
+        />
     )
 }

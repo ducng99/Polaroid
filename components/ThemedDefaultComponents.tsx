@@ -30,7 +30,7 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
-export type FlatListProps = ThemeProps & DefaultFlatList['props'] & { _ref?: RefObject<DefaultFlatList> };
+export type FlatListProps = ThemeProps & DefaultFlatList['props'];
 
 export function Text(props: TextProps) {
     const { style, lightColor, darkColor, ...otherProps } = props;
@@ -47,8 +47,8 @@ export function View(props: ViewProps) {
 }
 
 export function FlatList(props: FlatListProps) {
-    const { style, lightColor, darkColor, _ref, ...otherProps } = props;
+    const { style, lightColor, darkColor, ...otherProps } = props;
     const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
-    return <DefaultFlatList style={[{ backgroundColor }, style]} {...otherProps} ref={_ref}/>;
+    return <DefaultFlatList style={[{ backgroundColor }, style]} {...otherProps} />;
 }
