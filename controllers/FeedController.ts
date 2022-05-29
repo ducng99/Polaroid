@@ -9,8 +9,10 @@ interface ArticlesResult {
     next_max_id: string
 }
 
+let refreshDelay = 5000;   // Delay between refresh requests
+
 export async function GetNewArticles(next_max_id?: string): Promise<ArticlesResult> {
-    if (await GetLastFetchTime() + 1000 * 5 < Date.now()) {
+    if (await GetLastFetchTime() + refreshDelay < Date.now()) {
         const storedCookies = await GetCookies();
 
         if (VerifyCookies(storedCookies)) {
@@ -19,26 +21,33 @@ export async function GetNewArticles(next_max_id?: string): Promise<ArticlesResu
                 await SendRequest("/");
             }
 
-            const body = new URLSearchParams({
+            const body = {
                 device_id: storedCookies.ds_user_id!,
                 is_async_ads_rti: "0",
                 is_async_ads_double_request: "0",
                 rti_delivery_backend: "0",
                 is_async_ads_in_headload_enabled: "0",
                 max_id: next_max_id || "",
-            }).toString();
+            };
 
             const response = await SendAPIRequest('/feed/timeline/', body);
-            await UpdateLastFetchTime();
-            
+            UpdateLastFetchTime();
+
             try {
                 const instaResponse = (await response.json()) as InstaFeedResponse;
-                const articles = ParseInstaFeedResponse(instaResponse);
-                if (!next_max_id) {
-                    await Storage.set("old_articles", JSON.stringify(articles));
-                }
 
-                return { articles, next_max_id: instaResponse.next_max_id };
+                if (instaResponse.status === "ok") {
+                    if (instaResponse.pull_to_refresh_window_ms) {
+                        refreshDelay = instaResponse.pull_to_refresh_window_ms;
+                    }
+
+                    const articles = ParseInstaFeedResponse(instaResponse);
+                    if (!next_max_id) {
+                        await Storage.set("old_articles", JSON.stringify(articles));
+                    }
+
+                    return { articles, next_max_id: instaResponse.next_max_id };
+                }
             }
             catch (ex) { console.error(ex) }
         }
@@ -61,7 +70,7 @@ export async function GetOldArticles(): Promise<ArticleModel[]> {
 function ParseInstaFeedResponse(response: InstaFeedResponse) {
     let articles: ArticleModel[] = [];
 
-    if (response.status === "ok" && response.num_results > 0) {
+    if (response.num_results > 0) {
         response.feed_items.forEach(item => {
             articles.push(new ArticleModel(item.media_or_ad));
         });

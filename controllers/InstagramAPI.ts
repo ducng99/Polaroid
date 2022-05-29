@@ -4,7 +4,7 @@ import SetCookieParser from "set-cookie-parser";
 
 interface RequestOptions {
     host?: string;
-    body?: string;
+    body?: { [key: string]: any };
     contentType?: "json" | "form";
     referer?: string;
     method?: "GET" | "POST";
@@ -22,7 +22,7 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
         options = Object.assign(options, _options);
 
         const storedCookies = await GetCookies();
-        let cookieString = Object.entries(storedCookies).map(([key, value]) => `${key}=${value}`).join("; ");
+        const cookieString = Object.entries(storedCookies).map(([key, value]) => `${key}=${value}`).join("; ");
 
         const url = new URL(path, options.host);
 
@@ -38,15 +38,19 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
         if (options.referer) {
             headers['Referer'] = options.referer;
         }
+        
+        let body = null;
 
         if (options.method === "POST") {
             switch (options.contentType) {
                 case "json":
                     headers['Content-Type'] = 'application/json';
+                    body = JSON.stringify(options.body);
                     break;
                 case "form":
                 default:
                     headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    body = new URLSearchParams(options.body).toString();
                     break;
             }
 
@@ -59,7 +63,7 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
 
         const request = new Request(url.toString(), {
             method: options.method,
-            body: options.body,
+            body,
             headers,
             referrer: options.referer,
             credentials: 'omit',
@@ -83,7 +87,7 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
     return new Response("Internal request failed", { status: 500 });
 }
 
-export async function SendAPIRequest(path: string, body: string) {
+export async function SendAPIRequest(path: string, body: { [key: string]: any }): Promise<Response> {
     let options: RequestOptions = {
         host: "https://i.instagram.com/api/v1",
         method: "POST",

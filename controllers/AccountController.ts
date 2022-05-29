@@ -25,14 +25,14 @@ export async function Login(username: string, password: string): Promise<LoginRe
 
     await SendRequest("/accounts/login/");
 
-    const body = new URLSearchParams({
+    const body = {
         username: username,
         enc_password: `#PWD_INSTAGRAM_BROWSER:0:${Math.floor(Date.now() / 1000)}:${password}`,
         queryParams: "{}",
         optIntoOneTap: "false",
         stopDeletionNonce: "",
         trustedDeviceRecords: "{}"
-    }).toString();
+    };
 
     const loginResult = await SendRequest("/accounts/login/ajax/", {
         method: "POST",

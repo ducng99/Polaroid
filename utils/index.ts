@@ -8,7 +8,7 @@ export function GenerateRandomString(length = 64) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
 
-    return text;    
+    return text;
 }
 
 export function Sleep(time: number) {
@@ -28,12 +28,10 @@ export function ClearFetchCookies() {
 export function UniqueMerge<T>(array1: Array<T>, array2: Array<T>, comparer: (a: T, b: T) => boolean): Array<T> {
     let result = array1.slice();
 
-    for (let i = 0; i < array2.length; i++) {
-        let item = array2[i];
-
+    array2.forEach(item => {
         if (!result.some(x => comparer(x, item)))
             result.push(item);
-    }
+    });
 
     return result;
 }

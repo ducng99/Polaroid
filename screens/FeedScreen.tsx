@@ -7,6 +7,7 @@ import { RootTabScreenProps } from '../types';
 import * as FeedController from '../controllers/FeedController';
 import ArticleModel from '../models/ArticleModel';
 import Article from '../components/Article';
+import { UniqueMerge } from '../utils';
 
 export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Feed'>) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,6 +62,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
             refreshing={isLoading}
             onRefresh={getNewArticles}
             onEndReached={getMoreArticles}
+            showsVerticalScrollIndicator={false}
         />
     );
 }
