@@ -7,8 +7,11 @@ export enum MediaType {
     Carousel = 8,
 }
 
+type onUpdateListener = (article: ArticleModel) => void;
+
 export default class ArticleModel {
     info?: MediaOrAd;
+    updateListeners: onUpdateListener[] = [];
 
     get TakenDate() {
         return new Date((this.info?.taken_at ?? 0) * 1000);
@@ -21,5 +24,31 @@ export default class ArticleModel {
     constructor(info?: MediaOrAd) {
         if (info)
             this.info = info;
+    }
+
+    static fromJSON(json: any) {
+        return Object.assign(new ArticleModel, json);
+    }
+    
+    update() {
+        this.updateListeners.forEach(listener => listener(this.clone()));
+    }
+    
+    clone() {
+        return Object.assign(new ArticleModel, this);
+    }
+    
+    addUpdateListener(listener: onUpdateListener) {
+        this.updateListeners.push(listener);
+    }
+    
+    removeUpdateListener(listener: onUpdateListener) {
+        this.updateListeners = this.updateListeners.filter(l => l !== listener);
+    }
+
+    toJSON() {
+        return {
+            info: this.info,
+        }
     }
 }

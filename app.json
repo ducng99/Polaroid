@@ -19,14 +19,18 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.ducng.polaroid",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "dev.ducng.Polaroid"
+      "permissions": [],
+      "package": "dev.ducng.Polaroid",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

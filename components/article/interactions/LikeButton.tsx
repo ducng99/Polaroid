@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet } from "react-native";
 import useColorScheme from "../../../hooks/useColorScheme";
 import { View } from "../../ThemedDefaultComponents";
@@ -7,14 +7,16 @@ import { AnimatedAntDesign } from "../../VectorIcons";
 const iconSize = 24;
 const iconMaxGrow = 1.1;
 
-export default function LikeButton() {
-    const [isLiked, setLiked] = useState(false);
+interface IProps {
+    isLiked: boolean;
+    onLikePress: (liked: boolean) => void;
+}
+
+export default function LikeButton(props: IProps) {
     const colorScheme = useColorScheme();
     const iconSizeScale = useRef(new Animated.Value(1)).current;
 
     const onPress = () => {
-        setLiked(() => !isLiked);
-
         Animated.sequence([
             Animated.timing(iconSizeScale, {
                 toValue: 0,
@@ -37,6 +39,8 @@ export default function LikeButton() {
                 useNativeDriver: false
             })
         ]).start();
+        
+        props.onLikePress(!props.isLiked);
     }
 
     return (
@@ -45,8 +49,8 @@ export default function LikeButton() {
         >
             <View style={styles.iconContainer}>
                 <AnimatedAntDesign
-                    name={isLiked ? 'heart' : 'hearto'}
-                    color={isLiked ? styles.iconActive.color : iconColors[colorScheme].color}
+                    name={props.isLiked ? 'heart' : 'hearto'}
+                    color={props.isLiked ? styles.iconActive.color : iconColors[colorScheme].color}
                     style={{
                         fontSize: iconSizeScale.interpolate({
                             inputRange: [0, 1],

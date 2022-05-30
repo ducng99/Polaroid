@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import ArticleModel, { MediaType } from "../models/ArticleModel";
 import ArticleHeader from "./article/ArticleHeader";
@@ -12,7 +13,19 @@ interface IProps {
 }
 
 export default function Article(props: IProps) {
-    const { article } = props;
+    const [article, setArticle] = useState(props.article);
+    
+    useEffect(() => {
+        const listener = (new_article: ArticleModel) => {
+            setArticle(() => new_article);
+        }
+        
+        article.addUpdateListener(listener);
+        
+        return () => {
+            article.removeUpdateListener(listener);
+        }
+    }, []);
 
     const getMediaDisplay = () => {
         switch (article.MediaType) {
@@ -31,7 +44,7 @@ export default function Article(props: IProps) {
             {
                 getMediaDisplay()
             }
-            <InteractionBar />
+            <InteractionBar article={article}/>
         </View>
     )
 }

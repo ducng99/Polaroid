@@ -43,7 +43,7 @@ export async function GetNewArticles(next_max_id?: string): Promise<ArticlesResu
 
                     const articles = ParseInstaFeedResponse(instaResponse);
                     if (!next_max_id) {
-                        await Storage.set("old_articles", JSON.stringify(articles));
+                        await Storage.set("old_articles", JSON.stringify(articles.map(article => article.toJSON())));
                     }
 
                     return { articles, next_max_id: instaResponse.next_max_id };
@@ -61,7 +61,7 @@ export async function GetOldArticles(): Promise<ArticleModel[]> {
 
     if (storedArticles) {
         const articlesObjs = JSON.parse(storedArticles) as { info: MediaOrAd }[];
-        return articlesObjs.map(articleObj => Object.assign(new ArticleModel, articleObj));
+        return articlesObjs.map(articleObj => ArticleModel.fromJSON(articleObj));
     }
 
     return [];

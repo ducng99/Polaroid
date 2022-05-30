@@ -28,7 +28,8 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
 
         let headers: { [key: string]: string } = {
             'User-Agent': UserAgent,
-            'Cookie': cookieString
+            'Cookie': cookieString,
+            'X-IG-App-ID': '936619743392459',
         };
 
         if (storedCookies.csrftoken) {
@@ -92,9 +93,6 @@ export async function SendAPIRequest(path: string, body: { [key: string]: any })
         host: "https://i.instagram.com/api/v1",
         method: "POST",
         body,
-        additionalHeaders: {
-            'X-IG-App-ID': '936619743392459'
-        }
     }
 
     return await SendRequest(path, options);

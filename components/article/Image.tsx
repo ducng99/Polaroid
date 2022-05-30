@@ -1,5 +1,6 @@
 import { FirstFrame } from "../../models/InstaFeedResponse"
 import { StyleSheet, useWindowDimensions, Image as DefaultImage, PixelRatio } from "react-native"
+import { useEffect, useState } from "react";
 
 interface IProps {
     images: FirstFrame[];
@@ -9,6 +10,11 @@ export default function Image(props: IProps) {
     const { images } = props;
     const windowSize = useWindowDimensions();
     const realWidth = PixelRatio.getPixelSizeForLayoutSize(windowSize.width);
+    const [image, setImage] = useState<FirstFrame>(images[0]);
+    
+    useEffect(() => {
+        setImage(getImage());
+    }, []);
 
     /**
      * Get correct sized image to best fit the screen
@@ -36,8 +42,6 @@ export default function Image(props: IProps) {
         
         return { width, height };
     }
-
-    const image = getImage();
 
     return (
         <DefaultImage
