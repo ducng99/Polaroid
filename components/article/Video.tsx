@@ -3,7 +3,7 @@ import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode } from 'expo-av'
 import { Animated, Pressable, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "../ThemedDefaultComponents";
-import { AnimatedFontAwesome, FontAwesome } from "../VectorIcons";
+import { AnimatedFontAwesome5, FontAwesome5 } from "../VectorIcons";
 
 interface IProps {
     videos: VideoVersion[]
@@ -12,7 +12,7 @@ interface IProps {
 export default function Video(props: IProps) {
     const windowSize = useWindowDimensions();
     const videoRef = useRef<DefaultVideo>(null);
-    const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying: boolean } | null>(null);
+    const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying?: boolean } | null>(null);
     const [isMuted, setMuted] = useState(false);
     const playButtonOpacity = useRef(new Animated.Value(0)).current;
 
@@ -76,11 +76,11 @@ export default function Video(props: IProps) {
                 resizeMode={ResizeMode.COVER}
             />
             <Pressable style={styles.overlay} onPress={togglePlay}>
-                <AnimatedFontAwesome name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedFontAwesome>
+                <AnimatedFontAwesome5 name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedFontAwesome5>
             </Pressable>
             <Pressable style={styles.muteButton} onPress={toggleMute}>
                 <View style={styles.muteButtonContainer}>
-                    <FontAwesome name={isMuted ? "volume-mute" : "volume-up"} size={14} color='rgba(255,255,255,0.95)'></FontAwesome>
+                    <FontAwesome5 name={isMuted ? "volume-mute" : "volume-up"} size={14} color='rgba(255,255,255,0.95)'></FontAwesome5>
                 </View>
             </Pressable>
         </View>

@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, StyleSheet } from "react-native";
 import useColorScheme from "../../../hooks/useColorScheme";
 import { View } from "../../ThemedDefaultComponents";
-import { AnimatedAntDesign } from "../../VectorIcons";
+import { AnimatedIonicons } from "../../VectorIcons";
 
-const iconSize = 24;
+const iconSize = 27;
 const iconMaxGrow = 1.1;
 
 interface IProps {
     isLiked: boolean;
-    onLikePress: (liked: boolean) => void;
+    onPress: (liked: boolean) => void;
 }
 
 export default function LikeButton(props: IProps) {
     const colorScheme = useColorScheme();
     const iconSizeScale = useRef(new Animated.Value(1)).current;
 
-    const onPress = () => {
+    useEffect(() => {
         Animated.sequence([
             Animated.timing(iconSizeScale, {
                 toValue: 0,
@@ -39,34 +39,30 @@ export default function LikeButton(props: IProps) {
                 useNativeDriver: false
             })
         ]).start();
-        
-        props.onLikePress(!props.isLiked);
+    }, [props.isLiked]);
+
+    const onPress = () => {
+        props.onPress(!props.isLiked);
     }
 
     return (
-        <Pressable
-            onPress={onPress}
-        >
-            <View style={styles.iconContainer}>
-                <AnimatedAntDesign
-                    name={props.isLiked ? 'heart' : 'hearto'}
-                    color={props.isLiked ? styles.iconActive.color : iconColors[colorScheme].color}
-                    style={{
-                        fontSize: iconSizeScale.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, iconSize]
-                        })
-                    }}
-                />
-            </View>
-        </Pressable>
+        <View style={styles.iconContainer}>
+            <AnimatedIonicons
+                name={props.isLiked ? 'heart' : 'heart-outline'}
+                color={props.isLiked ? styles.iconActive.color : iconColors[colorScheme].color}
+                style={{
+                    fontSize: iconSizeScale.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, iconSize]
+                    })
+                }}
+                onPress={onPress}
+            />
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        alignItems: 'flex-start',
-    },
     iconContainer: {
         width: iconSize * iconMaxGrow,
         height: iconSize * iconMaxGrow,
@@ -78,11 +74,11 @@ const styles = StyleSheet.create({
     }
 });
 
-const iconColors = StyleSheet.create({
+const iconColors = {
     light: {
         color: '#000'
     },
     dark: {
         color: '#fff',
     }
-})
+};

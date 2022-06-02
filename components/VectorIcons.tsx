@@ -1,7 +1,8 @@
-import { AntDesign as _AntDesign, FontAwesome5 as _FontAwesome} from "@expo/vector-icons";
 import { Animated } from "react-native";
+import { FontAwesome5 as _FontAwesome5, Ionicons as _Ionicons } from "@expo/vector-icons";
 
-export const AnimatedAntDesign = Animated.createAnimatedComponent(_AntDesign);
-export const AnimatedFontAwesome = Animated.createAnimatedComponent(_FontAwesome);
-export const AntDesign = _AntDesign;
-export const FontAwesome = _FontAwesome;
+
+export const FontAwesome5 = _FontAwesome5;
+export const AnimatedFontAwesome5 = Animated.createAnimatedComponent(_FontAwesome5);
+export const Ionicons = _Ionicons;
+export const AnimatedIonicons = Animated.createAnimatedComponent(_Ionicons);

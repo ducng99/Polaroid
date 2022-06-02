@@ -1,7 +1,7 @@
-import { AntDesign, FontAwesome } from '../components/VectorIcons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
+import { Ionicons } from '../components/VectorIcons';
 
 export default function useCachedResources() {
     const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -14,8 +14,7 @@ export default function useCachedResources() {
 
                 // Load fonts
                 await Font.loadAsync({
-                    ...AntDesign.font,
-                    ...FontAwesome.font,
+                    ...Ionicons.font,
                     'cookie-handwriting': require('../assets/fonts/Cookie-Regular.ttf'),
                     'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
                 });

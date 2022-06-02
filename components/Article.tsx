@@ -14,14 +14,14 @@ interface IProps {
 
 export default function Article(props: IProps) {
     const [article, setArticle] = useState(props.article);
-    
+
     useEffect(() => {
         const listener = (new_article: ArticleModel) => {
             setArticle(() => new_article);
         }
-        
+
         article.addUpdateListener(listener);
-        
+
         return () => {
             article.removeUpdateListener(listener);
         }
@@ -30,11 +30,13 @@ export default function Article(props: IProps) {
     const getMediaDisplay = () => {
         switch (article.MediaType) {
             case MediaType.Image:
-                return (<Image images={article.info!.image_versions2!.candidates} />);
+                return (<Image images={article.info!.image_versions2!.candidates} article={article} />);
             case MediaType.Video:
                 return (<Video videos={article.info!.video_versions!} />);
             case MediaType.Carousel:
-                return (<Carousel carousel={article.info!.carousel_media!} />);
+                return (<Carousel article={article} />);
+            default:
+                return (<></>);
         }
     }
 
@@ -44,7 +46,7 @@ export default function Article(props: IProps) {
             {
                 getMediaDisplay()
             }
-            <InteractionBar article={article}/>
+            <InteractionBar article={article} />
         </View>
     )
 }
