@@ -13,9 +13,9 @@ export default function Carousel(props: IProps) {
     const renderMedia = ({ item }: ListRenderItemInfo<CarouselMedia | MediaOrAd>) => {
         switch (item.media_type) {
             case MediaType.Image:
-                return <Image images={item.image_versions2!.candidates} article={props.article} key={item.id} />
+                return <Image images={item.image_versions2!.candidates} article={props.article} />
             case MediaType.Video:
-                return <Video videos={item.video_versions!} key={item.id} />
+                return <Video videos={item.video_versions!} />
             default:
                 return <></>
         }
@@ -26,6 +26,7 @@ export default function Carousel(props: IProps) {
             horizontal
             style={styles.container}
             data={props.article.info?.carousel_media ?? []}
+            keyExtractor={(item: CarouselMedia) => item.id}
             renderItem={renderMedia}
             pagingEnabled
             decelerationRate="fast"
