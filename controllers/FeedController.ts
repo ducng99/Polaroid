@@ -18,7 +18,8 @@ export async function GetNewArticles(next_max_id?: string): Promise<ArticlesResu
         if (VerifyCookies(storedCookies)) {
             if (!next_max_id) {
                 await UpdateCookies({ csrftoken: "" });
-                await SendRequest("/");
+                await SendRequest("/accounts/edit/");
+                console.log("Refreshing csrftoken");
             }
 
             const body = {
@@ -47,6 +48,9 @@ export async function GetNewArticles(next_max_id?: string): Promise<ArticlesResu
                     }
 
                     return { articles, next_max_id: instaResponse.next_max_id };
+                }
+                else {
+                    console.error("Failed fetching new articles", instaResponse);
                 }
             }
             catch (ex) { console.error(ex) }

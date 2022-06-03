@@ -39,7 +39,7 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
         if (options.referer) {
             headers['Referer'] = options.referer;
         }
-        
+
         let body = null;
 
         if (options.method === "POST") {
@@ -76,9 +76,13 @@ export async function SendRequest(path: string, _options?: RequestOptions): Prom
         const cookiesText = result.headers.get('set-cookie');
 
         if (cookiesText) {
-            for (const cookie of SetCookieParser.parse(SetCookieParser.splitCookiesString(cookiesText))) {
-                await UpdateCookies({ [cookie.name]: cookie.value });
-            }
+            const cookies = SetCookieParser.parse(SetCookieParser.splitCookiesString(cookiesText)).map(c => {
+                return { [c.name]: c.value };
+            }).reduce((prev, curr) => {
+                return { ...prev, ...curr };
+            });
+            console.log("New cookies:", cookies);
+            await UpdateCookies(cookies);
         }
 
         return result;
