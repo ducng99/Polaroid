@@ -1,6 +1,6 @@
 import { VideoVersion } from "../../models/InstaFeedResponse"
 import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode } from 'expo-av'
-import { Animated, Pressable, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
+import { Animated, PixelRatio, Pressable, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "../ThemedDefaultComponents";
 import { AnimatedFontAwesome5, FontAwesome5 } from "../VectorIcons";
@@ -9,14 +9,19 @@ interface IProps {
     videos: VideoVersion[]
 }
 
-export default function Video(props: IProps) {
+export default function Video({ videos }: IProps) {
     const windowSize = useWindowDimensions();
+    const realWidth = PixelRatio.getPixelSizeForLayoutSize(windowSize.width);
     const videoRef = useRef<DefaultVideo>(null);
+    const [video, setVideo] = useState<VideoVersion>(videos[0]);
+    const [videoSize, setVideoSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
     const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying?: boolean } | null>(null);
     const [isMuted, setMuted] = useState(false);
     const playButtonOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
+        setVideo(getVideo());
+        
         if (status?.isPlaying) {
             playButtonOpacity.setValue(0);
         }
@@ -24,8 +29,26 @@ export default function Video(props: IProps) {
             playButtonOpacity.setValue(1);
         }
     }, []);
+    
+    useEffect(() => {
+        setVideoSize(getFitVideoSize(video));
+    }, [video]);
 
-    const getFitVideoSize = (video: VideoVersion): StyleProp<ViewStyle> => {
+    /**
+     * Get correct sized video to best fit the screen
+     */
+    const getVideo = () => {
+        let optimalVids = videos.filter(vid => vid.width > realWidth).sort((a, b) => a.width - b.width);
+
+        if (optimalVids.length === 0) {
+            optimalVids = videos;
+            optimalVids.sort((a, b) => b.width - a.width);
+        }
+
+        return optimalVids[0];
+    }
+
+    const getFitVideoSize = (video: VideoVersion) => {
         const ratio = video.width / video.height;
         let width = windowSize.width;
         let height = windowSize.width / ratio;
@@ -68,8 +91,8 @@ export default function Video(props: IProps) {
     return (
         <View>
             <DefaultVideo
-                source={{ uri: props.videos[0].url }}
-                style={[styles.videoPlayer, getFitVideoSize(props.videos[0])]}
+                source={{ uri: video.url }}
+                style={[styles.videoPlayer, videoSize]}
                 isLooping
                 onPlaybackStatusUpdate={(status) => setStatus(status)}
                 ref={videoRef}

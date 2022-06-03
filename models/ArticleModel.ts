@@ -32,6 +32,7 @@ export default class ArticleModel {
     
     update() {
         this.updateListeners.forEach(listener => listener(this.clone()));
+        // TODO: Update in old-articles storage
     }
     
     clone() {
