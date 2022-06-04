@@ -1,3 +1,4 @@
+import { LikeArticle, UnlikeArticle } from "../controllers/InteractionController";
 import { MediaOrAd } from "./InstaFeedResponse";
 
 export enum MediaType {
@@ -10,8 +11,11 @@ export enum MediaType {
 type onUpdateListener = (article: ArticleModel) => void;
 
 export default class ArticleModel {
+    /**
+     * If modify info object directly, please call {@link update()}
+     */
     info?: MediaOrAd;
-    updateListeners: onUpdateListener[] = [];
+    private updateListeners: onUpdateListener[] = [];
 
     get TakenDate() {
         return new Date((this.info?.taken_at ?? 0) * 1000);
@@ -25,14 +29,32 @@ export default class ArticleModel {
         if (info)
             this.info = info;
     }
+    
+    like() {
+        if (this.info && !this.info.has_liked) {
+            LikeArticle(this.info.pk);
+            this.info.like_count++;
+            this.info.has_liked = true;
+            this.update();
+        }
+    }
+    
+    unlike() {
+        if (this.info && this.info.has_liked) {
+            UnlikeArticle(this.info.pk);
+            this.info.like_count--;
+            this.info.has_liked = false;
+            this.update();
+        }
+    }
 
     static fromJSON(json: any) {
         return Object.assign(new ArticleModel, json);
     }
     
     update() {
-        this.updateListeners.forEach(listener => listener(this.clone()));
-        // TODO: Update in old-articles storage
+        const clone = this.clone();
+        this.updateListeners.forEach(listener => listener(clone));
     }
     
     clone() {

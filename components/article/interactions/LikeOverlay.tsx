@@ -41,16 +41,7 @@ export default function LikeOverlay({ article }: IProps) {
                 })
             ]).start();
 
-            if (typeof article.info !== "undefined") {
-                const prevLiked = article.info.has_liked;
-                article.info.has_liked = true;
-                article.update();
-
-                if (prevLiked != true) {
-                    LikeArticle(article.info.pk);
-                }
-            }
-
+            article.like();
             setLikePressCount(0);
         }
         else {
@@ -62,6 +53,7 @@ export default function LikeOverlay({ article }: IProps) {
         <Pressable
             style={styles.likeOverlay}
             onPressIn={onLikeOverlayPress}
+            onTouchMove={() => setLikePressCount(0)}
         >
             <AnimatedIonicons name="heart" color="#ffffff"
                 style={{

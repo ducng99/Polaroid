@@ -10,20 +10,13 @@ interface IProps {
     article: ArticleModel
 }
 
-export default function InteractionBar(props: IProps) {
+export default function InteractionBar({ article }: IProps) {
     const onLikeUpdate = (liked: boolean) => {
-        if (typeof props.article.info !== "undefined") {
-            if (props.article.info.has_liked != liked) {
-                if (liked) {
-                    LikeArticle(props.article.info.pk);
-                }
-                else {
-                    UnlikeArticle(props.article.info.pk);
-                }
-
-                props.article.info.has_liked = liked;
-            }
-            props.article.update();
+        if (liked) {
+            article.like();
+        }
+        else {
+            article.unlike();
         }
     }
 
@@ -38,7 +31,7 @@ export default function InteractionBar(props: IProps) {
     return (
         <View style={styles.container}>
             <View style={styles.leftContainer}>
-                <LikeButton isLiked={props.article.info?.has_liked ?? false} onPress={onLikeUpdate} />
+                <LikeButton isLiked={article.info?.has_liked ?? false} onPress={onLikeUpdate} />
                 <CommentButton onPress={onCommentPress} />
                 <ShareButton onPress={onSharePress} />
             </View>

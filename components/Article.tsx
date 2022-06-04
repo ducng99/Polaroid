@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
+import { UpdateOldArticle } from "../controllers/FeedController";
 import ArticleModel, { MediaType } from "../models/ArticleModel";
 import ArticleHeader from "./article/ArticleHeader";
 import Caption from "./article/Caption";
@@ -20,6 +21,7 @@ export default function Article(props: IProps) {
     useEffect(() => {
         const listener = (new_article: ArticleModel) => {
             setArticle(() => new_article);
+            UpdateOldArticle(new_article);
         }
 
         article.addUpdateListener(listener);
