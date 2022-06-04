@@ -12,47 +12,56 @@ export default class Storage {
 
         return Storage._instance;
     }
-    
+
     private IsInitialized = false;
-    
+
     private readonly PASSPHRASE_KEY = 'storagePassphrase';
-    private passphrase: string|null = null;
-    
-    private constructor() {}
-    
+    private passphrase: string | null = null;
+
+    private constructor() { }
+
     private async init() {
         if (!this.IsInitialized) {
-            this.passphrase = await SecureStore.getItemAsync(this.PASSPHRASE_KEY);
+            try {
+                this.passphrase = await SecureStore.getItemAsync(this.PASSPHRASE_KEY);
+            }
+            catch {
+                // Passphrase is unreadable, remove all data
+                await SecureStore.deleteItemAsync(this.PASSPHRASE_KEY);
+                await AsyncStorage.clear();
+                this.passphrase = null;
+            }
             
             if (!this.passphrase) {
                 this.passphrase = GenerateRandomString();
                 await SecureStore.setItemAsync(this.PASSPHRASE_KEY, this.passphrase);
             }
-            
+
             this.IsInitialized = true;
         }
     }
-    
+
     static async get(key: string) {
         await this.Instance.init();
-        
+
         try {
             const encrypted_value = await AsyncStorage.getItem(key);
-            
+
             if (this.Instance.passphrase && encrypted_value) {
                 return CryptoES.AES.decrypt(encrypted_value, this.Instance.passphrase).toString(CryptoES.enc.Utf8);
             }
         }
         catch (ex) {
+            await AsyncStorage.removeItem(key);
             console.error(ex);
-            throw new Error("Failed to retrieve data for key: " + key);
+            return;
         }
     }
-    
+
     static async set(key: string, value: string) {
         await this.Instance.init();
-        
-        try {            
+
+        try {
             if (this.Instance.passphrase) {
                 const encrypted_value = CryptoES.AES.encrypt(value, this.Instance.passphrase).toString();
                 await AsyncStorage.setItem(key, encrypted_value);
@@ -63,10 +72,10 @@ export default class Storage {
             throw new Error("Failed to set data for key: " + key);
         }
     }
-    
+
     static async remove(key: string) {
         await this.Instance.init();
-        
+
         try {
             await AsyncStorage.removeItem(key);
         }
