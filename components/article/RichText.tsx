@@ -1,5 +1,6 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
+import { LinkRegex } from "../../utils";
 import { Text } from "../ThemedDefaultComponents";
 
 interface IProps {
@@ -7,38 +8,30 @@ interface IProps {
 }
 
 export default function RichText({ text }: IProps) {
+    const [parsedText, setParsedText] = useState<JSX.Element[]>([]);
+
+    useEffect(() => {
+        setParsedText(parseText(text));
+    }, [text])
+
     const parseText = (caption: string) => {
         let parsed: JSX.Element[] = [];
 
-        caption.split(" ").forEach(word => {
-            if (word.startsWith("#")) {
-                let link = /^(#(?:\p{L}|[0-9_])+)/u.exec(word);
-                if (link && link[1]) {
-                    parsed.push(<><Text style={styles.link}>{link[1]}</Text><Text>{word.replace(link[1], "")} </Text></>);
-                }
-                else {
-                    parsed.push(<Text>{word} </Text>);
-                }
+        const parts = caption.split(LinkRegex);
+        for (let i = 0; i < parts.length; i++) {
+            if (i % 3 === 0)
+                parsed[i] = <Text>{parts[i]}</Text>
+            else if (i % 3 === 1) {
+                parsed[i] = <Text style={styles.link}>{parts[i]}{parts[i + 1]}</Text>
+                ++i;
             }
-            else if (word.startsWith("@")) {
-                let link = /^(@(?:\p{L}|[0-9_])+)/u.exec(word);
-                if (link && link[1]) {
-                    parsed.push(<><Text style={styles.link}>{link[1]}</Text><Text>{word.replace(link[1], "")} </Text></>);
-                }
-                else {
-                    parsed.push(<Text>{word} </Text>);
-                }
-            }
-            else {
-                parsed.push(<Text>{word} </Text>);
-            }
-        });
+        }
 
         return parsed.map((e, i) => <Fragment key={i}>{e}</Fragment>);
     }
 
     return (
-        <>{parseText(text)}</>
+        <>{parsedText}</>
     )
 }
 
