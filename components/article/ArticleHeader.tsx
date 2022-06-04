@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 10,
-        paddingHorizontal: 15,
     },
     username: {
         marginLeft: 10,

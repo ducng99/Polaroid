@@ -5,6 +5,7 @@ import ArticleHeader from "./article/ArticleHeader";
 import Carousel from "./article/Carousel";
 import Image from "./article/Image";
 import InteractionBar from "./article/InteractionBar";
+import LikeCountBar from "./article/LikeCountBar";
 import Video from "./article/Video";
 import { View } from "./ThemedDefaultComponents";
 
@@ -41,18 +42,23 @@ export default function Article(props: IProps) {
     }
 
     return (
-        <View style={styles.articleContainer}>
-            <ArticleHeader user={article.info!.user} />
+        <View>
+            <View style={styles.padder}>
+                <ArticleHeader user={article.info!.user} />
+            </View>
             {
                 getMediaDisplay()
             }
-            <InteractionBar article={article} />
+            <View style={styles.padder}>
+                <InteractionBar article={article} />
+                <LikeCountBar article={article} />
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    articleContainer: {
-
+    padder: {
+        paddingHorizontal: 15
     }
 })

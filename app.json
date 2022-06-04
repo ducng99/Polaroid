@@ -12,6 +12,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "./android-locale-string-mod"
+      ]
+    ],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -20,7 +25,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "dev.ducng.polaroid",
+      "bundleIdentifier": "dev.ducng.Polaroid",
       "buildNumber": "1"
     },
     "android": {

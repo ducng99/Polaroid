@@ -55,7 +55,6 @@ export default function InteractionBar(props: IProps) {
 const styles = StyleSheet.create({
     container: {
         marginVertical: 10,
-        marginHorizontal: 16,
         flexDirection: "row",
     },
     leftContainer: {
