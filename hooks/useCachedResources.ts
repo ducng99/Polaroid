@@ -15,7 +15,10 @@ export default function useCachedResources() {
                 // Load fonts
                 await Font.loadAsync({
                     ...Ionicons.font,
-                    'cookie-handwriting': require('../assets/fonts/Cookie-Regular.ttf'),
+                    'Roboto-Bold': require('../assets/fonts/Roboto/Roboto-Bold.ttf'),
+                    'Roboto-Medium': require('../assets/fonts/Roboto/Roboto-Medium.ttf'),
+                    'Roboto-Regular': require('../assets/fonts/Roboto/Roboto-Regular.ttf'),
+                    'cookie-handwriting': require('../assets/fonts/Cookie/Cookie-Regular.ttf'),
                     'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
                 });
             } catch (e) {
