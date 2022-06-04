@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import ArticleModel, { MediaType } from "../models/ArticleModel";
 import ArticleHeader from "./article/ArticleHeader";
+import Caption from "./article/Caption";
 import Carousel from "./article/Carousel";
 import Image from "./article/Image";
 import InteractionBar from "./article/InteractionBar";
@@ -52,6 +53,7 @@ export default function Article(props: IProps) {
             <View style={styles.padder}>
                 <InteractionBar article={article} />
                 <LikeCountBar article={article} />
+                <Caption article={article} />
             </View>
         </View>
     )

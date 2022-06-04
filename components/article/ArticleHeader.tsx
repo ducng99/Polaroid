@@ -27,6 +27,6 @@ const styles = StyleSheet.create({
     },
     username: {
         marginLeft: 10,
-        fontWeight: '900',
+        fontFamily: 'Roboto-Medium',
     }
 });
