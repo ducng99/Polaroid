@@ -7,11 +7,12 @@ interface IProps {
 }
 
 export default function LikeCountBar({ article }: IProps) {
-    const likeCount = (article.info?.like_count ?? 0).toLocaleString();
+    const likeCount = article.info?.like_count ?? 0;
+    const likeCountStr = likeCount.toLocaleString();
     
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>{likeCount}</Text><Text style={styles.text}> likes</Text>
+            <Text style={styles.text}>{likeCountStr}&nbsp;like{likeCount > 0 ? 's' : ''}</Text>
         </View>
     )
 }
@@ -19,8 +20,9 @@ export default function LikeCountBar({ article }: IProps) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
+        marginTop: 7,
     },
     text: {
-        fontWeight: '900',
+        fontFamily: 'Roboto-Medium'
     }
 })

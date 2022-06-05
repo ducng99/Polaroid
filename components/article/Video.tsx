@@ -1,15 +1,17 @@
 import { VideoVersion } from "../../models/InstaFeedResponse"
 import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode } from 'expo-av'
-import { Animated, PixelRatio, Pressable, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
+import { Animated, PixelRatio, Pressable, StyleSheet, useWindowDimensions } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "../ThemedDefaultComponents";
 import { AnimatedFontAwesome5, FontAwesome5 } from "../VectorIcons";
+import { Sleep, UserAgent } from "../../utils";
 
 interface IProps {
-    videos: VideoVersion[]
+    videos: VideoVersion[],
+    isViewing: boolean,
 }
 
-export default function Video({ videos }: IProps) {
+export default function Video({ videos, isViewing }: IProps) {
     const windowSize = useWindowDimensions();
     const realWidth = PixelRatio.getPixelSizeForLayoutSize(windowSize.width);
     const videoRef = useRef<DefaultVideo>(null);
@@ -18,21 +20,86 @@ export default function Video({ videos }: IProps) {
     const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying?: boolean } | null>(null);
     const [isMuted, setMuted] = useState(false);
     const playButtonOpacity = useRef(new Animated.Value(0)).current;
+    let isloading = false;
 
     useEffect(() => {
         setVideo(getVideo());
-        
+
         if (status?.isPlaying) {
             playButtonOpacity.setValue(0);
         }
         else {
             playButtonOpacity.setValue(1);
         }
-    }, []);
-    
+    }, [videos]);
+
     useEffect(() => {
         setVideoSize(getFitVideoSize(video));
+
+        if (isViewing)
+            loadVideo(video);
     }, [video]);
+
+    const loadVideo = async (video: VideoVersion) => {
+        // For some shitty reason, ExoPlayer keeps throwing "Decoder init failed".
+        // So we will keep trying to play the video until it works.
+        if (!isloading) {
+            isloading = true;
+            let newStatus = null;
+
+            do {
+                try {
+                    newStatus = await videoRef.current?.loadAsync?.({
+                        uri: video.url,
+                        headers: { "User-Agent": UserAgent },
+                        overrideFileExtensionAndroid: "mp4",
+                    }, {
+                        isLooping: true,
+                        shouldPlay: false
+                    })
+                }
+                catch { }
+                if (!newStatus || !newStatus.isLoaded) {
+                    console.log("Failed to load video. Retrying...");
+                    await Sleep(5000);
+                }
+            } while (isViewing && (!newStatus || !newStatus.isLoaded));
+
+            isloading = false;
+        }
+    }
+
+    useEffect(() => {
+        if (!isViewing && status?.isLoaded) {
+            videoRef.current?.pauseAsync?.();
+        }
+        else if (isViewing && !status?.isLoaded) {
+            loadVideo(video);
+        }
+    }, [isViewing]);
+
+    useEffect(() => {
+        if (status) {
+            if (status.isPlaying) {
+                playButtonOpacity.stopAnimation(() => {
+                    Animated.timing(playButtonOpacity, {
+                        toValue: 0,
+                        duration: 100,
+                        useNativeDriver: true,
+                    }).start();
+                });
+            }
+            else {
+                playButtonOpacity.stopAnimation(() => {
+                    Animated.timing(playButtonOpacity, {
+                        toValue: 1,
+                        duration: 100,
+                        useNativeDriver: true,
+                    }).start();
+                });
+            }
+        }
+    }, [status?.isPlaying]);
 
     /**
      * Get correct sized video to best fit the screen
@@ -62,24 +129,10 @@ export default function Video({ videos }: IProps) {
     }
 
     const togglePlay = () => {
-        if (status?.isPlaying) {
-            videoRef.current?.pauseAsync();
-
-            playButtonOpacity.stopAnimation();
-            Animated.timing(playButtonOpacity, {
-                toValue: 1,
-                duration: 100,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            videoRef.current?.playAsync();
-
-            playButtonOpacity.stopAnimation();
-            Animated.timing(playButtonOpacity, {
-                toValue: 0,
-                duration: 100,
-                useNativeDriver: true,
-            }).start();
+        if (status?.isLoaded && status?.isPlaying) {
+            videoRef.current?.pauseAsync?.();
+        } else if (status?.isLoaded) {
+            videoRef.current?.playAsync?.();
         }
     }
 
@@ -91,12 +144,10 @@ export default function Video({ videos }: IProps) {
     return (
         <View>
             <DefaultVideo
-                source={{ uri: video.url }}
                 style={[styles.videoPlayer, videoSize]}
-                isLooping
                 onPlaybackStatusUpdate={(status) => setStatus(status)}
-                ref={videoRef}
                 resizeMode={ResizeMode.COVER}
+                ref={videoRef}
             />
             <Pressable style={styles.overlay} onPress={togglePlay}>
                 <AnimatedFontAwesome5 name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedFontAwesome5>

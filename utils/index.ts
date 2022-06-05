@@ -35,3 +35,5 @@ export function UniqueMerge<T>(array1: Array<T>, array2: Array<T>, comparer: (a:
 
     return result;
 }
+
+export const LinkRegex = /([#@])((?:\p{L}|[0-9_])+)/u;

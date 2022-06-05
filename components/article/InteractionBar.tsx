@@ -47,7 +47,7 @@ export default function InteractionBar({ article }: IProps) {
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 8,
+        marginTop: 7,
         flexDirection: "row",
     },
     leftContainer: {

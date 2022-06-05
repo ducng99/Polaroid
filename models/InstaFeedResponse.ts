@@ -62,7 +62,7 @@ export interface MediaOrAd {
     is_organic_product_tagging_eligible:        boolean;
     can_see_insights_as_brand:                  boolean;
     preview?:                                   string;
-    caption:                                    Caption;
+    caption:                                    Caption | null;
     comment_inform_treatment:                   CommentInformTreatment;
     sharing_friction_info:                      SharingFrictionInfo;
     can_viewer_save:                            boolean;

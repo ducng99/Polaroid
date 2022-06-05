@@ -18,7 +18,7 @@ export default class ArticleModel {
     private updateListeners: onUpdateListener[] = [];
 
     get TakenDate() {
-        return new Date((this.info?.taken_at ?? 0) * 1000);
+        return (this.info?.taken_at ?? 0);
     }
 
     get MediaType(): MediaType {
@@ -29,7 +29,7 @@ export default class ArticleModel {
         if (info)
             this.info = info;
     }
-    
+
     like() {
         if (this.info && !this.info.has_liked) {
             LikeArticle(this.info.pk);
@@ -38,7 +38,7 @@ export default class ArticleModel {
             this.update();
         }
     }
-    
+
     unlike() {
         if (this.info && this.info.has_liked) {
             UnlikeArticle(this.info.pk);
@@ -51,20 +51,20 @@ export default class ArticleModel {
     static fromJSON(json: any) {
         return Object.assign(new ArticleModel, json);
     }
-    
+
     update() {
         const clone = this.clone();
         this.updateListeners.forEach(listener => listener(clone));
     }
-    
+
     clone() {
         return Object.assign(new ArticleModel, this);
     }
-    
+
     addUpdateListener(listener: onUpdateListener) {
         this.updateListeners.push(listener);
     }
-    
+
     removeUpdateListener(listener: onUpdateListener) {
         this.updateListeners = this.updateListeners.filter(l => l !== listener);
     }

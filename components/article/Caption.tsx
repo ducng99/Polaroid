@@ -24,7 +24,7 @@ export default function Caption({ article }: IProps) {
     useEffect(() => {
         (async () => {
             const fullText = article.info?.caption?.text ?? "";
-            const username = article.info?.caption?.user?.username ?? "";
+            const username = article.info?.caption?.user.username ?? "";
 
             let fullTextSize = await measureText(username + " " + fullText, false);
 
@@ -55,9 +55,10 @@ export default function Caption({ article }: IProps) {
                             text += parts[i] + parts[i + 1];
                             ++i;
                         }
+                        else {
+                            done = true;
+                        }
                     }
-
-                    currentTextSize = await measureText(username + " " + text);
                 }
 
                 setDisplayingText(text);
@@ -98,6 +99,7 @@ export default function Caption({ article }: IProps) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
+        marginTop: 2,
     },
     username: {
         fontFamily: "Roboto-Medium",

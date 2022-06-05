@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ListRenderItemInfo, StyleSheet, FlatList as DefaultFlatList } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ListRenderItemInfo, StyleSheet, FlatList as DefaultFlatList, ViewToken } from 'react-native';
 
 import { FlatList } from '../components/ThemedDefaultComponents';
 import { IsLoggedIn } from '../controllers/AccountController';
@@ -14,6 +14,8 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
     const [loadedArticles, setArticles] = useState<ArticleModel[]>([]);
     const [max_id, setNewMaxId] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
+    const listRef = useRef<DefaultFlatList>(null);
+    const [viewingIndex, setViewingIndex] = useState(0);
 
     // TODO: On navigate to this screen, run recheck below again
     useEffect(() => {
@@ -43,7 +45,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
         setArticles(articles);
         setIsLoading(false);
     }
-    
+
     const getMoreArticles = async () => {
         setIsLoading(true);
         const { articles, next_max_id } = await FeedController.GetNewArticles(max_id);
@@ -52,7 +54,23 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
         setIsLoading(false);
     }
 
-    const renderArticle = ({ item }: ListRenderItemInfo<ArticleModel>) => <Article key={item.info!.id} article={item} />
+    const renderArticle = ({ item, index }: ListRenderItemInfo<ArticleModel>) => <Article key={item.info!.id} article={item} isViewing={index === viewingIndex} />
+    
+    const onItemViewableChanged = ({ changed }: { changed: ViewToken[] }) => {
+        const viewableIndex = changed.filter(i => i.isViewable).map(i => i.index ?? 0);
+
+        if (viewableIndex.length > 0) {
+            setViewingIndex(viewableIndex[0]);
+        }
+    }
+
+    const configs = useRef([{
+        viewabilityConfig: {
+            minimumViewTime: 100,
+            itemVisiblePercentThreshold: 50
+        },
+        onViewableItemsChanged: onItemViewableChanged
+    }]).current;
 
     return (
         <FlatList
@@ -62,7 +80,12 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
             refreshing={isLoading}
             onRefresh={getNewArticles}
             onEndReached={getMoreArticles}
+            onEndReachedThreshold={0.8}
+            overScrollMode="never"
             showsVerticalScrollIndicator={false}
+            initialNumToRender={3}
+            viewabilityConfigCallbackPairs={configs}
+            _ref={listRef}
         />
     );
 }

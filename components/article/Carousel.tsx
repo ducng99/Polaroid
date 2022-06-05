@@ -1,4 +1,5 @@
-import { ListRenderItemInfo, StyleSheet } from "react-native"
+import { useRef, useState } from "react"
+import { ListRenderItemInfo, StyleSheet, ViewToken } from "react-native"
 import ArticleModel, { MediaType } from "../../models/ArticleModel"
 import { CarouselMedia, MediaOrAd } from "../../models/InstaFeedResponse"
 import { FlatList } from "../ThemedDefaultComponents"
@@ -7,33 +8,55 @@ import Video from "./Video"
 
 interface IProps {
     article: ArticleModel;
+    isViewing: boolean;
 }
 
-export default function Carousel(props: IProps) {
-    const renderMedia = ({ item }: ListRenderItemInfo<CarouselMedia | MediaOrAd>) => {
+export default function Carousel({ article, isViewing }: IProps) {
+    const [viewingIndex, setViewableIndex] = useState(0);
+
+    const renderMedia = ({ item, index }: ListRenderItemInfo<CarouselMedia | MediaOrAd>) => {
         switch (item.media_type) {
             case MediaType.Image:
-                return <Image images={item.image_versions2!.candidates} article={props.article} />
+                return <Image images={item.image_versions2!.candidates} article={article} />
             case MediaType.Video:
-                return <Video videos={item.video_versions!} />
+                return <Video videos={item.video_versions!} isViewing={isViewing && index === viewingIndex} />
             default:
                 return <></>
         }
     }
 
+    const onViewableChanged = ({ changed }: { changed: ViewToken[] }) => {
+        const viewableIndex = changed.filter(i => i.isViewable).map(i => i.index ?? 0);
+
+        if (viewableIndex.length > 0) {
+            setViewableIndex(viewableIndex[0]);
+        }
+    }
+
+    const configs = useRef([{
+        viewabilityConfig: {
+            minimumViewTime: 150,
+            itemVisiblePercentThreshold: 50
+        },
+        onViewableItemsChanged: onViewableChanged
+    }]).current;
+
     return (
         <FlatList
             horizontal
             style={styles.container}
-            data={props.article.info?.carousel_media ?? []}
+            data={article.info?.carousel_media ?? []}
             keyExtractor={(item: CarouselMedia) => item.id}
             renderItem={renderMedia}
+            extraData={viewingIndex}
             pagingEnabled
             decelerationRate="fast"
             snapToAlignment="start"
             directionalLockEnabled
             overScrollMode="never"
             showsHorizontalScrollIndicator={false}
+            initialNumToRender={3}
+            viewabilityConfigCallbackPairs={configs}
         />
     )
 }
