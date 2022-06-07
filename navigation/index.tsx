@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '../components/VectorIcons';
+import { Ionicons } from '../components/VectorIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,7 +19,6 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import LoginScreen from '../screens/LoginScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import { View } from '../components/ThemedDefaultComponents';
 import Header from '../components/Header';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -64,41 +63,26 @@ function BottomTabNavigator() {
         <BottomTab.Navigator
             initialRouteName="Feed"
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme].tint,
+                header: () => <Header />,
                 tabBarActiveBackgroundColor: Colors[colorScheme].background,
                 tabBarInactiveBackgroundColor: Colors[colorScheme].background,
-                header: () => <Header />,
+                tabBarActiveTintColor: Colors[colorScheme].tabIconSelected,
+                tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
+                tabBarShowLabel: false,
             }}>
             <BottomTab.Screen
                 name="Feed"
                 component={FeedScreen}
-                options={({ navigation }: RootTabScreenProps<'Feed'>) => ({
-                    title: 'Polaroid',
-                    tabBarShowLabel: false,
-                    tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-                    headerRight: () => (
-                        <Pressable
-                            onPress={() => navigation.navigate('Settings')}
-                            style={({ pressed }) => ({
-                                opacity: pressed ? 0.5 : 1,
-                            })}>
-                            <FontAwesome
-                                name="info-circle"
-                                size={25}
-                                color={Colors[colorScheme].text}
-                                style={{ marginRight: 15 }}
-                            />
-                        </Pressable>
-                    ),
-                })}
+                options={{
+                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "home-sharp" : "home-outline"} color={color} />
+                }}
             />
             <BottomTab.Screen
                 name="Explore"
                 component={ExploreScreen}
                 options={{
-                    title: 'Explore',
-                    tabBarShowLabel: false,
-                    tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
+                    //tabBarButton: Home,
+                    tabBarIcon: ({ color, focused }) => <TabBarIcon name={focused ? "compass-sharp" : "compass-outline"} color={color} />
                 }}
             />
         </BottomTab.Navigator>
@@ -109,8 +93,8 @@ function BottomTabNavigator() {
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-    name: React.ComponentProps<typeof FontAwesome>['name'];
+    name: React.ComponentProps<typeof Ionicons>['name'];
     color: string;
 }) {
-    return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+    return <Ionicons size={26} style={{ marginBottom: -3 }} {...props} />;
 }
