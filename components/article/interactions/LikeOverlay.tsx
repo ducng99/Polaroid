@@ -11,32 +11,34 @@ interface IProps {
 export default function LikeOverlay({ article }: IProps) {
     const [likePressCount, setLikePressCount] = useState(0);
     const likeIconSizeScale = useRef(new Animated.Value(0)).current;
+    const animation = useRef(Animated.sequence([
+        Animated.timing(likeIconSizeScale, {
+            toValue: 1.1,
+            duration: 170,
+            useNativeDriver: true
+        }),
+        Animated.timing(likeIconSizeScale, {
+            toValue: 0.92,
+            duration: 170,
+            useNativeDriver: true
+        }),
+        Animated.timing(likeIconSizeScale, {
+            toValue: 1,
+            duration: 170,
+            useNativeDriver: true
+        }),
+        Animated.delay(250),
+        Animated.timing(likeIconSizeScale, {
+            toValue: 0,
+            duration: 170,
+            useNativeDriver: true
+        })
+    ])).current;
 
     const onLikeOverlayPress = () => {
         if (likePressCount > 0 && Date.now() - likePressCount < 500) {
-            Animated.sequence([
-                Animated.timing(likeIconSizeScale, {
-                    toValue: 1.1,
-                    duration: 170,
-                    useNativeDriver: true
-                }),
-                Animated.timing(likeIconSizeScale, {
-                    toValue: 0.92,
-                    duration: 170,
-                    useNativeDriver: true
-                }),
-                Animated.timing(likeIconSizeScale, {
-                    toValue: 1,
-                    duration: 170,
-                    useNativeDriver: true
-                }),
-                Animated.delay(250),
-                Animated.timing(likeIconSizeScale, {
-                    toValue: 0,
-                    duration: 170,
-                    useNativeDriver: true
-                })
-            ]).start();
+            animation.reset();
+            animation.start();
 
             article.like();
             setLikePressCount(0);

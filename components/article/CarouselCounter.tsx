@@ -8,7 +8,7 @@ interface IProps {
 }
 
 export default function CarouselCounter({ current, total }: IProps) {
-    const opacity = useRef(new Animated.Value(0)).current;
+    const opacity = useRef(new Animated.Value(1)).current;
     const hideSequence = useRef(Animated.sequence([
         Animated.delay(5000),
         Animated.timing(opacity, {
@@ -20,12 +20,6 @@ export default function CarouselCounter({ current, total }: IProps) {
 
     useEffect(() => {
         hideSequence.reset();
-        Animated.timing(opacity, {
-            toValue: 1,
-            duration: 0,
-            useNativeDriver: true
-        }).start();
-
         hideSequence.start();
     }, [current]);
 

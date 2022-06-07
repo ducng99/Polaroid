@@ -15,30 +15,32 @@ interface IProps {
 export default function LikeButton(props: IProps) {
     const colorScheme = useColorScheme();
     const iconSizeScale = useRef(new Animated.Value(1)).current;
+    const animation = useRef(Animated.sequence([
+        Animated.timing(iconSizeScale, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: true
+        }),
+        Animated.timing(iconSizeScale, {
+            toValue: iconMaxGrow,
+            duration: 170,
+            useNativeDriver: true
+        }),
+        Animated.timing(iconSizeScale, {
+            toValue: 0.92,
+            duration: 170,
+            useNativeDriver: true
+        }),
+        Animated.timing(iconSizeScale, {
+            toValue: 1,
+            duration: 170,
+            useNativeDriver: true
+        })
+    ])).current;
 
     useEffect(() => {
-        Animated.sequence([
-            Animated.timing(iconSizeScale, {
-                toValue: 0,
-                duration: 0,
-                useNativeDriver: true
-            }),
-            Animated.timing(iconSizeScale, {
-                toValue: iconMaxGrow,
-                duration: 170,
-                useNativeDriver: true
-            }),
-            Animated.timing(iconSizeScale, {
-                toValue: 0.92,
-                duration: 170,
-                useNativeDriver: true
-            }),
-            Animated.timing(iconSizeScale, {
-                toValue: 1,
-                duration: 170,
-                useNativeDriver: true
-            })
-        ]).start();
+        animation.reset();
+        animation.start();
     }, [props.isLiked]);
 
     const onPress = () => {
