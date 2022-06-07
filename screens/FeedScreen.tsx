@@ -8,6 +8,7 @@ import * as FeedController from '../controllers/FeedController';
 import ArticleModel from '../models/ArticleModel';
 import Article from '../components/Article';
 import { UniqueMerge } from '../utils';
+import { useScrollToTop } from '@react-navigation/native';
 
 export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Feed'>) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,6 +16,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
     const [max_id, setNewMaxId] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const listRef = useRef<DefaultFlatList>(null);
+    useScrollToTop(listRef);
     const [viewingIndex, setViewingIndex] = useState(0);
 
     // TODO: On navigate to this screen, run recheck below again
