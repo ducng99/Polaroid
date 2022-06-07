@@ -8,9 +8,6 @@ interface IProps {
     article: ArticleModel;
 }
 
-const likeIconSize = 100;
-const likeIconMaxGrow = 1.1;
-
 export default function LikeOverlay({ article }: IProps) {
     const [likePressCount, setLikePressCount] = useState(0);
     const likeIconSizeScale = useRef(new Animated.Value(0)).current;
@@ -19,25 +16,25 @@ export default function LikeOverlay({ article }: IProps) {
         if (likePressCount > 0 && Date.now() - likePressCount < 500) {
             Animated.sequence([
                 Animated.timing(likeIconSizeScale, {
-                    toValue: likeIconMaxGrow,
+                    toValue: 1.1,
                     duration: 170,
-                    useNativeDriver: false
+                    useNativeDriver: true
                 }),
                 Animated.timing(likeIconSizeScale, {
                     toValue: 0.92,
                     duration: 170,
-                    useNativeDriver: false
+                    useNativeDriver: true
                 }),
                 Animated.timing(likeIconSizeScale, {
                     toValue: 1,
                     duration: 170,
-                    useNativeDriver: false
+                    useNativeDriver: true
                 }),
                 Animated.delay(250),
                 Animated.timing(likeIconSizeScale, {
                     toValue: 0,
                     duration: 170,
-                    useNativeDriver: false
+                    useNativeDriver: true
                 })
             ]).start();
 
@@ -55,17 +52,16 @@ export default function LikeOverlay({ article }: IProps) {
             onPressIn={onLikeOverlayPress}
             onTouchMove={() => setLikePressCount(0)}
         >
-            <AnimatedIonicons name="heart" color="#ffffff"
+            <AnimatedIonicons name="heart" color="#ffffff" size={100}
                 style={{
                     opacity: likeIconSizeScale.interpolate({
                         inputRange: [0, 0.92],
                         outputRange: [0, 1],
                         extrapolate: "clamp"
                     }),
-                    fontSize: likeIconSizeScale.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, likeIconSize]
-                    }),
+                    transform: [{
+                        scale: likeIconSizeScale
+                    }]
                 }}
             />
         </Pressable>

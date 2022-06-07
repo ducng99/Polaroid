@@ -21,22 +21,22 @@ export default function LikeButton(props: IProps) {
             Animated.timing(iconSizeScale, {
                 toValue: 0,
                 duration: 0,
-                useNativeDriver: false
+                useNativeDriver: true
             }),
             Animated.timing(iconSizeScale, {
                 toValue: iconMaxGrow,
                 duration: 170,
-                useNativeDriver: false
+                useNativeDriver: true
             }),
             Animated.timing(iconSizeScale, {
                 toValue: 0.92,
                 duration: 170,
-                useNativeDriver: false
+                useNativeDriver: true
             }),
             Animated.timing(iconSizeScale, {
                 toValue: 1,
                 duration: 170,
-                useNativeDriver: false
+                useNativeDriver: true
             })
         ]).start();
     }, [props.isLiked]);
@@ -50,11 +50,11 @@ export default function LikeButton(props: IProps) {
             <AnimatedIonicons
                 name={props.isLiked ? 'heart' : 'heart-outline'}
                 color={props.isLiked ? styles.iconActive.color : iconColors[colorScheme].color}
+                size={iconSize}
                 style={{
-                    fontSize: iconSizeScale.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, iconSize]
-                    })
+                    transform: [{
+                        scale: iconSizeScale
+                    }]
                 }}
                 onPress={onPress}
             />
