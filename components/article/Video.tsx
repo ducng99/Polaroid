@@ -20,6 +20,15 @@ export default function Video({ videos, isViewing }: IProps) {
     const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying?: boolean } | null>(null);
     const [isMuted, setMuted] = useState(false);
     const playButtonOpacity = useRef(new Animated.Value(0)).current;
+    const muteButtonOpacity = useRef(new Animated.Value(1)).current;
+    const hideSequence = useRef(Animated.sequence([
+        Animated.delay(5000),
+        Animated.timing(muteButtonOpacity, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true
+        })
+    ])).current;
     let isloading = false;
 
     useEffect(() => {
@@ -129,6 +138,8 @@ export default function Video({ videos, isViewing }: IProps) {
     }
 
     const togglePlay = () => {
+        hideSequence.reset(); hideSequence.start();
+        
         if (status?.isLoaded && status?.isPlaying) {
             videoRef.current?.pauseAsync?.();
         } else if (status?.isLoaded) {
@@ -137,6 +148,8 @@ export default function Video({ videos, isViewing }: IProps) {
     }
 
     const toggleMute = async () => {
+        hideSequence.reset(); hideSequence.start();
+        
         await videoRef.current?.setIsMutedAsync(!isMuted);
         setMuted(!isMuted);
     }
@@ -153,9 +166,9 @@ export default function Video({ videos, isViewing }: IProps) {
                 <AnimatedFontAwesome5 name="play" size={70} color='#ffffffcc' style={{ opacity: playButtonOpacity }}></AnimatedFontAwesome5>
             </Pressable>
             <Pressable style={styles.muteButton} onPress={toggleMute}>
-                <View style={styles.muteButtonContainer}>
+                <Animated.View style={[styles.muteButtonContainer, { opacity: muteButtonOpacity }]}>
                     <FontAwesome5 name={isMuted ? "volume-mute" : "volume-up"} size={14} color='rgba(255,255,255,0.95)'></FontAwesome5>
-                </View>
+                </Animated.View>
             </Pressable>
         </View>
     )
