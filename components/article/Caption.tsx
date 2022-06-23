@@ -4,7 +4,7 @@ import ArticleModel from "../../models/ArticleModel";
 import { LinkRegex } from "../../utils";
 import { Text } from "../ThemedDefaultComponents";
 import TextSize from 'react-native-text-size';
-import RichText from "./RichText";
+import RichText from "../RichText";
 
 interface IProps {
     article: ArticleModel;

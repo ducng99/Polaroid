@@ -1,5 +1,5 @@
 import { VideoVersion } from "../../models/InstaFeedResponse"
-import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode } from 'expo-av'
+import { Video as DefaultVideo, AVPlaybackStatus, ResizeMode, AVPlaybackStatusSuccess } from 'expo-av'
 import { Animated, PixelRatio, Pressable, StyleSheet, useWindowDimensions } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "../ThemedDefaultComponents";
@@ -17,9 +17,9 @@ export default function Video({ videos, isViewing }: IProps) {
     const videoRef = useRef<DefaultVideo>(null);
     const [video, setVideo] = useState<VideoVersion>(videos[0]);
     const [videoSize, setVideoSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
-    const [status, setStatus] = useState<AVPlaybackStatus & { isPlaying?: boolean } | null>(null);
+    const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
     const [isMuted, setMuted] = useState(false);
-    const playButtonOpacity = useRef(new Animated.Value(0)).current;
+    const playButtonOpacity = useRef(new Animated.Value(1)).current;
     const muteButtonOpacity = useRef(new Animated.Value(1)).current;
     const hideSequence = useRef(Animated.sequence([
         Animated.delay(5000),
@@ -33,13 +33,6 @@ export default function Video({ videos, isViewing }: IProps) {
 
     useEffect(() => {
         setVideo(getVideo());
-
-        if (status?.isPlaying) {
-            playButtonOpacity.setValue(0);
-        }
-        else {
-            playButtonOpacity.setValue(1);
-        }
     }, [videos]);
 
     useEffect(() => {
@@ -55,6 +48,7 @@ export default function Video({ videos, isViewing }: IProps) {
         if (!isloading) {
             isloading = true;
             let newStatus = null;
+            let retries = 0;
 
             do {
                 try {
@@ -69,10 +63,11 @@ export default function Video({ videos, isViewing }: IProps) {
                 }
                 catch { }
                 if (!newStatus || !newStatus.isLoaded) {
+                    retries++;
                     console.log("Failed to load video. Retrying...");
                     await Sleep(5000);
                 }
-            } while (isViewing && (!newStatus || !newStatus.isLoaded));
+            } while (retries < 5 && isViewing && (!newStatus || !newStatus.isLoaded));
 
             isloading = false;
         }
@@ -89,7 +84,7 @@ export default function Video({ videos, isViewing }: IProps) {
 
     useEffect(() => {
         if (status) {
-            if (status.isPlaying) {
+            if ((status as AVPlaybackStatusSuccess).isPlaying) {
                 playButtonOpacity.stopAnimation(() => {
                     Animated.timing(playButtonOpacity, {
                         toValue: 0,
@@ -108,7 +103,7 @@ export default function Video({ videos, isViewing }: IProps) {
                 });
             }
         }
-    }, [status?.isPlaying]);
+    }, [status && "isPlaying" in status && status.isPlaying]);
 
     /**
      * Get correct sized video to best fit the screen

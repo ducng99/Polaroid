@@ -19,7 +19,6 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
     useScrollToTop(listRef);
     const [viewingIndex, setViewingIndex] = useState(0);
 
-    // TODO: On navigate to this screen, run recheck below again
     useEffect(() => {
         (async () => {
             setIsLoading(true);
@@ -49,11 +48,9 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
     }
 
     const getMoreArticles = async () => {
-        setIsLoading(true);
         const { articles, next_max_id } = await FeedController.GetNewArticles(max_id);
         setNewMaxId(next_max_id);
         setArticles(UniqueMerge(loadedArticles, articles, (a, b) => a.info?.id === b.info?.id));
-        setIsLoading(false);
     }
 
     const renderArticle = ({ item, index }: ListRenderItemInfo<ArticleModel>) => <Article key={item.info!.id} article={item} isViewing={index === viewingIndex} />
@@ -68,7 +65,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
 
     const configs = useRef([{
         viewabilityConfig: {
-            minimumViewTime: 100,
+            minimumViewTime: 16,
             itemVisiblePercentThreshold: 50
         },
         onViewableItemsChanged: onItemViewableChanged
@@ -82,7 +79,7 @@ export default function FeedScreen({ route, navigation }: RootTabScreenProps<'Fe
             refreshing={isLoading}
             onRefresh={getNewArticles}
             onEndReached={getMoreArticles}
-            onEndReachedThreshold={0.8}
+            onEndReachedThreshold={1 - (3 / loadedArticles.length)}
             overScrollMode="never"
             showsVerticalScrollIndicator={false}
             initialNumToRender={3}
