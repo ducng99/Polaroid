@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { LinkRegex } from "../../utils";
-import { Text } from "../ThemedDefaultComponents";
+import { LinkRegex } from "../utils";
+import { Text } from "./ThemedDefaultComponents";
 
 interface IProps {
     text: string
